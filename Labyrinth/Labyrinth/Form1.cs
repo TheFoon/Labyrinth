@@ -35,6 +35,7 @@ namespace Labyrinth
             Button QuitButton = new Button();
             Button hostGameButton = new Button();
             Button joinGameButton = new Button();
+            Button toTitleScreenButton = new Button();
 
 
             this.SuspendLayout();
@@ -84,13 +85,45 @@ namespace Labyrinth
                 startGameScreen.RowStyles.Add(new RowStyle(SizeType.Percent, 50f));
 
 
-                hostGameButton.Text = "Start Game";
+                hostGameButton.Text = "Host Game";
                 hostGameButton.BackColor = Color.Crimson;
                 hostGameButton.Size = new Size(200, 100);
+                hostGameButton.Location = new Point(0, 5);
+                hostGameButton.Anchor = ((AnchorStyles)((AnchorStyles.Top) | (AnchorStyles.Left) | (AnchorStyles.Right)));
+                //disable blue outine
+                hostGameButton.TabStop = false;
+                hostGameButton.FlatStyle = FlatStyle.Flat;
+                hostGameButton.FlatAppearance.BorderSize = 0;
 
-                joinGameButton.Text = "Start Game";
+
+                joinGameButton.Text = "Join Game";
                 joinGameButton.BackColor = Color.Crimson;
                 joinGameButton.Size = new Size(200, 100);
+                joinGameButton.Location = new Point(0, 110);
+                joinGameButton.Anchor = ((AnchorStyles)((AnchorStyles.Top) | (AnchorStyles.Left) | (AnchorStyles.Right)));
+                //disable blue outine
+                joinGameButton.TabStop = false;
+                joinGameButton.FlatStyle = FlatStyle.Flat;
+                joinGameButton.FlatAppearance.BorderSize = 0;
+
+
+                toTitleScreenButton.Text = "Back";
+                toTitleScreenButton.BackColor = Color.Crimson;
+                toTitleScreenButton.Size = new Size(200, 100);
+                toTitleScreenButton.Location = new Point(0, 0);
+                toTitleScreenButton.Click += (s1, ev1) => {
+                    titleScreen.BringToFront();
+                };
+                toTitleScreenButton.Anchor = ((AnchorStyles)((AnchorStyles.Top) | (AnchorStyles.Left) | (AnchorStyles.Right)));
+                //disable blue outine
+                toTitleScreenButton.TabStop = false;
+                toTitleScreenButton.FlatStyle = FlatStyle.Flat;
+                toTitleScreenButton.FlatAppearance.BorderSize = 0;
+
+                //add buttons to title screen
+                startGameScreenInner.Controls.Add(hostGameButton);
+                startGameScreenInner.Controls.Add(joinGameButton);
+                startGameScreen.Controls.Add(toTitleScreenButton, 0, 2);
 
 
                 //construct starting screen
