@@ -20,7 +20,6 @@ namespace Labyrinth
         }
         public PlayerStatus playerStatus = PlayerStatus.None;
         private BoardHandler boardHandler = new BoardHandler();
-        private LobbyHandler lobbyHandler = new LobbyHandler();
 
         public GameHandler() {
 
@@ -32,12 +31,12 @@ namespace Labyrinth
 
         //Start hosting game
         public void HostGame() {
-            lobbyHandler.HostBroadcast(true);
+            LobbyHandler.HostBroadcast(true);
             playerStatus = PlayerStatus.Host;
         }
 
         public void JoinGame() {
-            lobbyHandler.RecieveHosts(true);
+            LobbyHandler.RecieveHosts(true);
             playerStatus = PlayerStatus.Joining;
         }
     }
@@ -47,28 +46,28 @@ namespace Labyrinth
 
     }
 
-    class LobbyHandler
+    public static class LobbyHandler
     {
-        private IPAddress IP_ADDRESS;
-        private IPAddress IP_BROADCAST;
+        private static IPAddress IP_ADDRESS;
+        private static IPAddress IP_BROADCAST;
 
-        public LobbyHandler() {
+        static LobbyHandler() {
             string info = GetIP();
             IP_ADDRESS = IPAddress.Parse(info.Split(' ')[0]);
             IPAddress mask = IPAddress.Parse(info.Split(' ')[1]);
             IP_BROADCAST = GetBroadcastAddress(IP_ADDRESS, mask);
         }
 
-        public void HostBroadcast(bool a) {
+        public static void HostBroadcast(bool a) {
 
         }
 
-        public void RecieveHosts(bool a)
+        public static void RecieveHosts(bool a)
         {
 
         }
 
-        private string GetIP()
+        private static string GetIP()
         {
             NetworkInterface[] nics = NetworkInterface.GetAllNetworkInterfaces();
             foreach (NetworkInterface adapter in nics)
@@ -87,7 +86,7 @@ namespace Labyrinth
             return "255.255.255.255";
         }
 
-        public IPAddress GetBroadcastAddress(this IPAddress address, IPAddress subnetMask)
+        public static IPAddress GetBroadcastAddress(this IPAddress address, IPAddress subnetMask)
         {
             byte[] ipAdressBytes = address.GetAddressBytes();
             byte[] subnetMaskBytes = subnetMask.GetAddressBytes();
