@@ -19,16 +19,42 @@ namespace Labyrinth
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            Panel titleScreen = new Panel();
+            TableLayoutPanel titleScreen = new TableLayoutPanel();
+            Panel titleScreenInner = new Panel();
+            this.SuspendLayout();
+            titleScreen.SuspendLayout();
+            titleScreenInner.SuspendLayout();
             titleScreen.Dock = DockStyle.Fill;
-            Label TitleLabel = new Label();
-            TitleLabel.Text = "Labyrinth";
-            titleScreen.Controls.Add(TitleLabel);
+            titleScreenInner.Dock = DockStyle.Fill;
+            titleScreen.ColumnCount = 3;
+            titleScreen.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50f));
+            titleScreen.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 210f));
+            titleScreen.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50f));
+            titleScreen.RowCount = 3;
+            titleScreen.RowStyles.Add(new RowStyle(SizeType.Percent, 50f));
+            titleScreen.RowStyles.Add(new RowStyle(SizeType.Absolute, 210f));
+            titleScreen.RowStyles.Add(new RowStyle(SizeType.Percent, 50f));
+            Label titleLabel = new Label();
+            titleLabel.Text = "Labyrinth";
+            titleLabel.TextAlign = ContentAlignment.MiddleCenter;
+            titleLabel.Size = new Size(200, 100);
+            titleLabel.BackColor = Color.Aqua;
+            titleLabel.Location = new Point(0, 0);
+            titleLabel.Anchor = ((AnchorStyles)((AnchorStyles.Top) | (AnchorStyles.Left) | (AnchorStyles.Right)));
+            titleScreenInner.Controls.Add(titleLabel);
             Button StartButton = new Button();
             StartButton.Text = "Start Game";
+            StartButton.BackColor = Color.Crimson;
+            StartButton.Size = new Size(200, 100);
             StartButton.Click += (s, ev) => {};
-            titleScreen.Controls.Add(StartButton);
+            StartButton.Location = new Point(0, 100);
+            StartButton.Anchor = ((AnchorStyles)((AnchorStyles.Top) | (AnchorStyles.Left) | (AnchorStyles.Right)));
+            titleScreenInner.Controls.Add(StartButton);
+            titleScreen.Controls.Add(titleScreenInner, 1, 1);
             this.Controls.Add(titleScreen);
+            this.ResumeLayout(false);
+            titleScreen.ResumeLayout(false);
+            titleScreenInner.ResumeLayout(false);
         }
     }
 }
