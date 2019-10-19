@@ -24,16 +24,22 @@ namespace Labyrinth
             this.SuspendLayout();
             titleScreen.SuspendLayout();
             titleScreenInner.SuspendLayout();
+
+            //make panels fill their parents
             titleScreen.Dock = DockStyle.Fill;
             titleScreenInner.Dock = DockStyle.Fill;
+
+            //add rows and columns to tableLayoutPanel
             titleScreen.ColumnCount = 3;
             titleScreen.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50f));
-            titleScreen.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 210f));
+            titleScreen.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 200f));
             titleScreen.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50f));
             titleScreen.RowCount = 3;
             titleScreen.RowStyles.Add(new RowStyle(SizeType.Percent, 50f));
-            titleScreen.RowStyles.Add(new RowStyle(SizeType.Absolute, 210f));
+            titleScreen.RowStyles.Add(new RowStyle(SizeType.Absolute, 215f));
             titleScreen.RowStyles.Add(new RowStyle(SizeType.Percent, 50f));
+
+            //Title
             Label titleLabel = new Label();
             titleLabel.Text = "Labyrinth";
             titleLabel.TextAlign = ContentAlignment.MiddleCenter;
@@ -41,15 +47,39 @@ namespace Labyrinth
             titleLabel.BackColor = Color.Aqua;
             titleLabel.Location = new Point(0, 0);
             titleLabel.Anchor = ((AnchorStyles)((AnchorStyles.Top) | (AnchorStyles.Left) | (AnchorStyles.Right)));
-            titleScreenInner.Controls.Add(titleLabel);
+            titleScreen.Controls.Add(titleLabel, 1, 0);
+
+            //Start Button
             Button StartButton = new Button();
             StartButton.Text = "Start Game";
             StartButton.BackColor = Color.Crimson;
             StartButton.Size = new Size(200, 100);
             StartButton.Click += (s, ev) => {};
-            StartButton.Location = new Point(0, 100);
+            StartButton.Location = new Point(0, 5);
             StartButton.Anchor = ((AnchorStyles)((AnchorStyles.Top) | (AnchorStyles.Left) | (AnchorStyles.Right)));
+            //disable blue outine
+            StartButton.TabStop = false;
+            StartButton.FlatStyle = FlatStyle.Flat;
+            StartButton.FlatAppearance.BorderSize = 0;
+
+            //Quit Button
+            Button QuitButton = new Button();
+            QuitButton.Text = "Quit Game";
+            QuitButton.BackColor = Color.Crimson;
+            QuitButton.Size = new Size(200, 100);
+            QuitButton.Click += (s, ev) => { this.Close(); };
+            QuitButton.Location = new Point(0, 110);
+            QuitButton.Anchor = ((AnchorStyles)((AnchorStyles.Top) | (AnchorStyles.Left) | (AnchorStyles.Right)));
+            //disable blue outine
+            QuitButton.TabStop = false;
+            QuitButton.FlatStyle = FlatStyle.Flat;
+            QuitButton.FlatAppearance.BorderSize = 0;
+
+            //add buttons to title screen
             titleScreenInner.Controls.Add(StartButton);
+            titleScreenInner.Controls.Add(QuitButton);
+
+            //construct title screen
             titleScreen.Controls.Add(titleScreenInner, 1, 1);
             this.Controls.Add(titleScreen);
             this.ResumeLayout(false);
