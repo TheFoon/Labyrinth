@@ -20,8 +20,10 @@ namespace Labyrinth
         }
         public PlayerStatus playerStatus = PlayerStatus.None;
         private BoardHandler boardHandler = new BoardHandler();
+        public static List<IPAddress> playerIPs = new List<IPAddress>();
 
-        public GameHandler() {
+        public GameHandler()
+        {
 
         }
 
