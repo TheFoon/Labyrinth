@@ -15,6 +15,9 @@ namespace Labyrinth
         public int Inventory { get; set; }
         public int[] Objectives { get; set; }
 
+        /// <summary>
+        /// Constructor for Player class objects
+        /// </summary>
         public Player(/*team color which will decide the starting tile's coordinates*/)
         {
 

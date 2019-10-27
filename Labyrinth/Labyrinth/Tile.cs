@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Drawing;
 
 namespace Labyrinth
 {
@@ -16,9 +17,11 @@ namespace Labyrinth
         public bool PathDown { get; set; }
         public bool PathLeft { get; set; }
 
-        //public Random random = new Random();
-
-
+        /// <summary>
+        /// Constructor for Tile class objects
+        /// </summary>
+        /// <param name="id">The Tile objects id</param>
+        /// <param name="r">Required for the random generation of paths</param>
         public Tile(int id, Random r)
         {
             TileId = id;
@@ -59,6 +62,42 @@ namespace Labyrinth
                 else
                     Treasure = 0;
             }
+        }
+
+        /// <summary>
+        /// Determines which image should be assigned to the path
+        /// </summary>
+        public void DetermineTilePicture()
+        {
+            if (this.PathUp && !this.PathRight && this.PathDown && !this.PathLeft)
+                this.Paint += (s, ev) => { Graphics g = ev.Graphics; Image i = new Bitmap(@"D:\straight.png"); g.TranslateTransform((float)i.Width / 2, (float)i.Height / 2); g.RotateTransform(0); g.TranslateTransform(-(float)i.Width / 2, -(float)i.Height / 2); g.DrawImage(i, new Point(0, 0)); };
+
+            else if (!this.PathUp && this.PathRight && !this.PathDown && this.PathLeft)
+                this.Paint += (s, ev) => { Graphics g = ev.Graphics; Image i = new Bitmap(@"D:\straight.png"); g.TranslateTransform((float)i.Width / 2, (float)i.Height / 2); g.RotateTransform(90); g.TranslateTransform(-(float)i.Width / 2, -(float)i.Height / 2); g.DrawImage(i, new Point(0, 0)); };
+
+            else if (this.PathUp && this.PathRight && !this.PathDown && !this.PathLeft)
+                this.Paint += (s, ev) => { Graphics g = ev.Graphics; Image i = new Bitmap(@"D:\turn.png"); g.TranslateTransform((float)i.Width / 2, (float)i.Height / 2); g.RotateTransform(270); g.TranslateTransform(-(float)i.Width / 2, -(float)i.Height / 2); g.DrawImage(i, new Point(0, 0)); };
+
+            else if (!this.PathUp && this.PathRight && this.PathDown && !this.PathLeft)
+                this.Paint += (s, ev) => { Graphics g = ev.Graphics; Image i = new Bitmap(@"D:\turn.png"); g.TranslateTransform((float)i.Width / 2, (float)i.Height / 2); g.RotateTransform(0); g.TranslateTransform(-(float)i.Width / 2, -(float)i.Height / 2); g.DrawImage(i, new Point(0, 0)); };
+
+            else if (!this.PathUp && !this.PathRight && this.PathDown && this.PathLeft)
+                this.Paint += (s, ev) => { Graphics g = ev.Graphics; Image i = new Bitmap(@"D:\turn.png"); g.TranslateTransform((float)i.Width / 2, (float)i.Height / 2); g.RotateTransform(90); g.TranslateTransform(-(float)i.Width / 2, -(float)i.Height / 2); g.DrawImage(i, new Point(0, 0)); };
+
+            else if (this.PathUp && !this.PathRight && !this.PathDown && this.PathLeft)
+                this.Paint += (s, ev) => { Graphics g = ev.Graphics; Image i = new Bitmap(@"D:\turn.png"); g.TranslateTransform((float)i.Width / 2, (float)i.Height / 2); g.RotateTransform(180); g.TranslateTransform(-(float)i.Width / 2, -(float)i.Height / 2); g.DrawImage(i, new Point(0, 0)); };
+
+            else if (this.PathUp && this.PathRight && this.PathDown && !this.PathLeft)
+                this.Paint += (s, ev) => { Graphics g = ev.Graphics; Image i = new Bitmap(@"D:\t_path.png"); g.TranslateTransform((float)i.Width / 2, (float)i.Height / 2); g.RotateTransform(90); g.TranslateTransform(-(float)i.Width / 2, -(float)i.Height / 2); g.DrawImage(i, new Point(0, 0)); };
+
+            else if (!this.PathUp && this.PathRight && this.PathDown && this.PathLeft)
+                this.Paint += (s, ev) => { Graphics g = ev.Graphics; Image i = new Bitmap(@"D:\t_path.png"); g.TranslateTransform((float)i.Width / 2, (float)i.Height / 2); g.RotateTransform(180); g.TranslateTransform(-(float)i.Width / 2, -(float)i.Height / 2); g.DrawImage(i, new Point(0, 0)); };
+
+            else if (this.PathUp && !this.PathRight && this.PathDown && this.PathLeft)
+                this.Paint += (s, ev) => { Graphics g = ev.Graphics; Image i = new Bitmap(@"D:\t_path.png"); g.TranslateTransform((float)i.Width / 2, (float)i.Height / 2); g.RotateTransform(270); g.TranslateTransform(-(float)i.Width / 2, -(float)i.Height / 2); g.DrawImage(i, new Point(0, 0)); };
+
+            else if (this.PathUp && this.PathRight && !this.PathDown && this.PathLeft)
+                this.Paint += (s, ev) => { Graphics g = ev.Graphics; Image i = new Bitmap(@"D:\t_path.png"); g.TranslateTransform((float)i.Width / 2, (float)i.Height / 2); g.RotateTransform(0); g.TranslateTransform(-(float)i.Width / 2, -(float)i.Height / 2); g.DrawImage(i, new Point(0, 0)); };
         }
     }
 }

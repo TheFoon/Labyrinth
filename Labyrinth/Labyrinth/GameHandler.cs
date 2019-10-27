@@ -51,13 +51,26 @@ namespace Labyrinth
         internal class Board
         {
             public Tile[,] PlayingBoard { get; set; }
+            public Tile FreeTile { get; set; }
 
+            /// <summary>
+            /// Constructor for Board class objects
+            /// </summary>
+            /// <param name="size">Determines the size of the PlayingBoards</param>
             public Board(int size)
             {
                 PlayingBoard = new Tile[size, size];
+                if (size == 7)
+                    FreeTile = new Tile(50, random);
+                else
+                    FreeTile = new Tile(82, random);
             }
 
             private Random random = new Random();
+            
+            /// <summary>
+            /// Fills the PlayingBoard matrix with objects. Creates the FreeTile
+            /// </summary>
             public void FillBoardWithTile()
             {
                 for (int y = 0; y < PlayingBoard.GetLength(0); y++)
@@ -73,44 +86,21 @@ namespace Labyrinth
                             Tile tile = new Tile((y * PlayingBoard.GetLength(0)) + (x + 1), random);
 
                             tile.Size = new Size(100, 100);
-                            tile.BorderStyle = BorderStyle.Fixed3D;
-                            
-                            if (tile.PathUp && !tile.PathRight && tile.PathDown && !tile.PathLeft)
-                                tile.Paint += (s, ev) => { Graphics g = ev.Graphics; Image i = new Bitmap(@"D:\straight.png"); g.TranslateTransform((float)i.Width / 2, (float)i.Height / 2); g.RotateTransform(0); g.TranslateTransform(-(float)i.Width / 2, -(float)i.Height / 2); g.DrawImage(i, new Point(0, 0)); };
 
-                            else if (!tile.PathUp && tile.PathRight && !tile.PathDown && tile.PathLeft)
-                                tile.Paint += (s, ev) => { Graphics g = ev.Graphics; Image i = new Bitmap(@"D:\straight.png"); g.TranslateTransform((float)i.Width / 2, (float)i.Height / 2); g.RotateTransform(90); g.TranslateTransform(-(float)i.Width / 2, -(float)i.Height / 2); g.DrawImage(i, new Point(0, 0)); };
-
-                            else if (tile.PathUp && tile.PathRight && !tile.PathDown && !tile.PathLeft)
-                                tile.Paint += (s, ev) => { Graphics g = ev.Graphics; Image i = new Bitmap(@"D:\turn.png"); g.TranslateTransform((float)i.Width / 2, (float)i.Height / 2); g.RotateTransform(270); g.TranslateTransform(-(float)i.Width / 2, -(float)i.Height / 2); g.DrawImage(i, new Point(0, 0)); };
-
-                            else if (!tile.PathUp && tile.PathRight && tile.PathDown && !tile.PathLeft)
-                                tile.Paint += (s, ev) => { Graphics g = ev.Graphics; Image i = new Bitmap(@"D:\turn.png"); g.TranslateTransform((float)i.Width / 2, (float)i.Height / 2); g.RotateTransform(0); g.TranslateTransform(-(float)i.Width / 2, -(float)i.Height / 2); g.DrawImage(i, new Point(0, 0)); };
-
-                            else if (!tile.PathUp && !tile.PathRight && tile.PathDown && tile.PathLeft)
-                                tile.Paint += (s, ev) => { Graphics g = ev.Graphics; Image i = new Bitmap(@"D:\turn.png"); g.TranslateTransform((float)i.Width / 2, (float)i.Height / 2); g.RotateTransform(90); g.TranslateTransform(-(float)i.Width / 2, -(float)i.Height / 2); g.DrawImage(i, new Point(0, 0)); };
-
-                            else if (tile.PathUp && !tile.PathRight && !tile.PathDown && tile.PathLeft)
-                                tile.Paint += (s, ev) => { Graphics g = ev.Graphics; Image i = new Bitmap(@"D:\turn.png"); g.TranslateTransform((float)i.Width / 2, (float)i.Height / 2); g.RotateTransform(180); g.TranslateTransform(-(float)i.Width / 2, -(float)i.Height / 2); g.DrawImage(i, new Point(0, 0)); };
-
-                            else if (tile.PathUp && tile.PathRight && tile.PathDown && !tile.PathLeft)
-                                tile.Paint += (s, ev) => { Graphics g = ev.Graphics; Image i = new Bitmap(@"D:\t_path.png"); g.TranslateTransform((float)i.Width / 2, (float)i.Height / 2); g.RotateTransform(90); g.TranslateTransform(-(float)i.Width / 2, -(float)i.Height / 2); g.DrawImage(i, new Point(0, 0)); };
-
-                            else if (!tile.PathUp && tile.PathRight && tile.PathDown && tile.PathLeft)
-                                tile.Paint += (s, ev) => { Graphics g = ev.Graphics; Image i = new Bitmap(@"D:\t_path.png"); g.TranslateTransform((float)i.Width / 2, (float)i.Height / 2); g.RotateTransform(180); g.TranslateTransform(-(float)i.Width / 2, -(float)i.Height / 2); g.DrawImage(i, new Point(0, 0)); };
-
-                            else if (tile.PathUp && !tile.PathRight && tile.PathDown && tile.PathLeft)
-                                tile.Paint += (s, ev) => { Graphics g = ev.Graphics; Image i = new Bitmap(@"D:\t_path.png"); g.TranslateTransform((float)i.Width / 2, (float)i.Height / 2); g.RotateTransform(270); g.TranslateTransform(-(float)i.Width / 2, -(float)i.Height / 2); g.DrawImage(i, new Point(0, 0)); };
-
-                            else if (tile.PathUp && tile.PathRight && !tile.PathDown && tile.PathLeft)
-                                tile.Paint += (s, ev) => { Graphics g = ev.Graphics; Image i = new Bitmap(@"D:\t_path.png"); g.TranslateTransform((float)i.Width / 2, (float)i.Height / 2); g.RotateTransform(0); g.TranslateTransform(-(float)i.Width / 2, -(float)i.Height / 2); g.DrawImage(i, new Point(0, 0)); };
+                            tile.DetermineTilePicture();
                             
                             PlayingBoard[y, x] = tile;
                         }
                     }
                 }
-            }
 
+                FreeTile.Size = new Size(100, 100);
+                FreeTile.DetermineTilePicture();
+            }
+            /// <summary>
+            /// Places the Tile objects from the PlayingBoard matrix
+            /// </summary>
+            /// <param name="c">Which control the objects should be added</param>
             public void PlaceTiles(Control c)
             {
                 int y = 10, x = 10;
@@ -133,12 +123,11 @@ namespace Labyrinth
                     x = 10;
                     y += 110;
                 }
-            }
+                FreeTile.Location = new Point(1100, 10);
+                c.Controls.Add(FreeTile);
+            }           
         }
         //------------------------------
-
-
-
     }
 
     public static class LobbyHandler
