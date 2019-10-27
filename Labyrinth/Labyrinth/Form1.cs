@@ -181,7 +181,7 @@ namespace Labyrinth
                     joinScreen.RowStyles.Add(new ColumnStyle(SizeType.Percent, 50f));
                     for (int i = 1; i < GameHandler.playerIPs.Count + 1; i++)
                     {
-                        new_Label("label_Game" + i, GameHandler.playerIPs[i].Address.ToString(), new Point(0, i * 80));
+                        new_Label("label_Game" + i, GameHandler.playerIPs[i].ToString(), new Point(0, i * 80));
                     }
                     joinScreen.RowStyles.Add(new ColumnStyle(SizeType.Absolute, 150f));
                     joinScreen.RowStyles.Add(new ColumnStyle(SizeType.Percent, 50f));
