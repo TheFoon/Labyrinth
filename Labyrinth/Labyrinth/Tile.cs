@@ -16,6 +16,7 @@ namespace Labyrinth
         public bool PathRight { get; set; }
         public bool PathDown { get; set; }
         public bool PathLeft { get; set; }
+        public Label TileImage { get; set; }
 
         /// <summary>
         /// Constructor for Tile class objects
@@ -62,6 +63,23 @@ namespace Labyrinth
                 else
                     Treasure = 0;
             }
+            AllowDrop = true;
+            BorderStyle = BorderStyle.Fixed3D;
+
+            TileImage = new Label();
+            Controls.Add(TileImage);
+            TileImage.Size = new Size(100, 100);
+            TileImage.Location = new Point(0, 0);
+
+
+            DragEnter += Tile_DragEnter;
+            DragDrop += TIle_DragDrop;
+            foreach (Control l in Controls)
+            {
+                if (l is Label)
+                    l.MouseDown += L_MouseDown;
+            }
+
         }
 
         /// <summary>
@@ -70,34 +88,50 @@ namespace Labyrinth
         public void DetermineTilePicture()
         {
             if (this.PathUp && !this.PathRight && this.PathDown && !this.PathLeft)
-                this.Paint += (s, ev) => { Graphics g = ev.Graphics; Image i = new Bitmap(@"D:\straight.png"); g.TranslateTransform((float)i.Width / 2, (float)i.Height / 2); g.RotateTransform(0); g.TranslateTransform(-(float)i.Width / 2, -(float)i.Height / 2); g.DrawImage(i, new Point(0, 0)); };
+                TileImage.Paint += (s, ev) => { Graphics g = ev.Graphics; Image i = new Bitmap(@"D:\straight.png"); g.TranslateTransform((float)i.Width / 2, (float)i.Height / 2); g.RotateTransform(0); g.TranslateTransform(-(float)i.Width / 2, -(float)i.Height / 2); g.DrawImage(i, new Point(0, 0)); };
 
             else if (!this.PathUp && this.PathRight && !this.PathDown && this.PathLeft)
-                this.Paint += (s, ev) => { Graphics g = ev.Graphics; Image i = new Bitmap(@"D:\straight.png"); g.TranslateTransform((float)i.Width / 2, (float)i.Height / 2); g.RotateTransform(90); g.TranslateTransform(-(float)i.Width / 2, -(float)i.Height / 2); g.DrawImage(i, new Point(0, 0)); };
+                TileImage.Paint += (s, ev) => { Graphics g = ev.Graphics; Image i = new Bitmap(@"D:\straight.png"); g.TranslateTransform((float)i.Width / 2, (float)i.Height / 2); g.RotateTransform(90); g.TranslateTransform(-(float)i.Width / 2, -(float)i.Height / 2); g.DrawImage(i, new Point(0, 0)); };
 
             else if (this.PathUp && this.PathRight && !this.PathDown && !this.PathLeft)
-                this.Paint += (s, ev) => { Graphics g = ev.Graphics; Image i = new Bitmap(@"D:\turn.png"); g.TranslateTransform((float)i.Width / 2, (float)i.Height / 2); g.RotateTransform(270); g.TranslateTransform(-(float)i.Width / 2, -(float)i.Height / 2); g.DrawImage(i, new Point(0, 0)); };
+                TileImage.Paint += (s, ev) => { Graphics g = ev.Graphics; Image i = new Bitmap(@"D:\turn.png"); g.TranslateTransform((float)i.Width / 2, (float)i.Height / 2); g.RotateTransform(270); g.TranslateTransform(-(float)i.Width / 2, -(float)i.Height / 2); g.DrawImage(i, new Point(0, 0)); };
 
             else if (!this.PathUp && this.PathRight && this.PathDown && !this.PathLeft)
-                this.Paint += (s, ev) => { Graphics g = ev.Graphics; Image i = new Bitmap(@"D:\turn.png"); g.TranslateTransform((float)i.Width / 2, (float)i.Height / 2); g.RotateTransform(0); g.TranslateTransform(-(float)i.Width / 2, -(float)i.Height / 2); g.DrawImage(i, new Point(0, 0)); };
+                TileImage.Paint += (s, ev) => { Graphics g = ev.Graphics; Image i = new Bitmap(@"D:\turn.png"); g.TranslateTransform((float)i.Width / 2, (float)i.Height / 2); g.RotateTransform(0); g.TranslateTransform(-(float)i.Width / 2, -(float)i.Height / 2); g.DrawImage(i, new Point(0, 0)); };
 
             else if (!this.PathUp && !this.PathRight && this.PathDown && this.PathLeft)
-                this.Paint += (s, ev) => { Graphics g = ev.Graphics; Image i = new Bitmap(@"D:\turn.png"); g.TranslateTransform((float)i.Width / 2, (float)i.Height / 2); g.RotateTransform(90); g.TranslateTransform(-(float)i.Width / 2, -(float)i.Height / 2); g.DrawImage(i, new Point(0, 0)); };
+                TileImage.Paint += (s, ev) => { Graphics g = ev.Graphics; Image i = new Bitmap(@"D:\turn.png"); g.TranslateTransform((float)i.Width / 2, (float)i.Height / 2); g.RotateTransform(90); g.TranslateTransform(-(float)i.Width / 2, -(float)i.Height / 2); g.DrawImage(i, new Point(0, 0)); };
 
             else if (this.PathUp && !this.PathRight && !this.PathDown && this.PathLeft)
-                this.Paint += (s, ev) => { Graphics g = ev.Graphics; Image i = new Bitmap(@"D:\turn.png"); g.TranslateTransform((float)i.Width / 2, (float)i.Height / 2); g.RotateTransform(180); g.TranslateTransform(-(float)i.Width / 2, -(float)i.Height / 2); g.DrawImage(i, new Point(0, 0)); };
+                TileImage.Paint += (s, ev) => { Graphics g = ev.Graphics; Image i = new Bitmap(@"D:\turn.png"); g.TranslateTransform((float)i.Width / 2, (float)i.Height / 2); g.RotateTransform(180); g.TranslateTransform(-(float)i.Width / 2, -(float)i.Height / 2); g.DrawImage(i, new Point(0, 0)); };
 
             else if (this.PathUp && this.PathRight && this.PathDown && !this.PathLeft)
-                this.Paint += (s, ev) => { Graphics g = ev.Graphics; Image i = new Bitmap(@"D:\t_path.png"); g.TranslateTransform((float)i.Width / 2, (float)i.Height / 2); g.RotateTransform(90); g.TranslateTransform(-(float)i.Width / 2, -(float)i.Height / 2); g.DrawImage(i, new Point(0, 0)); };
+                TileImage.Paint += (s, ev) => { Graphics g = ev.Graphics; Image i = new Bitmap(@"D:\t_path.png"); g.TranslateTransform((float)i.Width / 2, (float)i.Height / 2); g.RotateTransform(90); g.TranslateTransform(-(float)i.Width / 2, -(float)i.Height / 2); g.DrawImage(i, new Point(0, 0)); };
 
             else if (!this.PathUp && this.PathRight && this.PathDown && this.PathLeft)
-                this.Paint += (s, ev) => { Graphics g = ev.Graphics; Image i = new Bitmap(@"D:\t_path.png"); g.TranslateTransform((float)i.Width / 2, (float)i.Height / 2); g.RotateTransform(180); g.TranslateTransform(-(float)i.Width / 2, -(float)i.Height / 2); g.DrawImage(i, new Point(0, 0)); };
+                TileImage.Paint += (s, ev) => { Graphics g = ev.Graphics; Image i = new Bitmap(@"D:\t_path.png"); g.TranslateTransform((float)i.Width / 2, (float)i.Height / 2); g.RotateTransform(180); g.TranslateTransform(-(float)i.Width / 2, -(float)i.Height / 2); g.DrawImage(i, new Point(0, 0)); };
 
             else if (this.PathUp && !this.PathRight && this.PathDown && this.PathLeft)
-                this.Paint += (s, ev) => { Graphics g = ev.Graphics; Image i = new Bitmap(@"D:\t_path.png"); g.TranslateTransform((float)i.Width / 2, (float)i.Height / 2); g.RotateTransform(270); g.TranslateTransform(-(float)i.Width / 2, -(float)i.Height / 2); g.DrawImage(i, new Point(0, 0)); };
+                TileImage.Paint += (s, ev) => { Graphics g = ev.Graphics; Image i = new Bitmap(@"D:\t_path.png"); g.TranslateTransform((float)i.Width / 2, (float)i.Height / 2); g.RotateTransform(270); g.TranslateTransform(-(float)i.Width / 2, -(float)i.Height / 2); g.DrawImage(i, new Point(0, 0)); };
 
             else if (this.PathUp && this.PathRight && !this.PathDown && this.PathLeft)
-                this.Paint += (s, ev) => { Graphics g = ev.Graphics; Image i = new Bitmap(@"D:\t_path.png"); g.TranslateTransform((float)i.Width / 2, (float)i.Height / 2); g.RotateTransform(0); g.TranslateTransform(-(float)i.Width / 2, -(float)i.Height / 2); g.DrawImage(i, new Point(0, 0)); };
+                TileImage.Paint += (s, ev) => { Graphics g = ev.Graphics; Image i = new Bitmap(@"D:\t_path.png"); g.TranslateTransform((float)i.Width / 2, (float)i.Height / 2); g.RotateTransform(0); g.TranslateTransform(-(float)i.Width / 2, -(float)i.Height / 2); g.DrawImage(i, new Point(0, 0)); };
+
+            
+        }
+        private void L_MouseDown(object sender, MouseEventArgs e)
+        {
+            TileImage.DoDragDrop(TileImage, DragDropEffects.Move);
+        }
+
+        private void TIle_DragDrop(object sender, DragEventArgs e)
+        {
+            ((Label)e.Data.GetData(typeof(Label))).Parent = (Tile)sender;
+        }
+
+        private void Tile_DragEnter(object sender, DragEventArgs e)
+        {
+            e.Effect = DragDropEffects.Move;
         }
     }
 }

@@ -53,6 +53,8 @@ namespace Labyrinth
             public Tile[,] PlayingBoard { get; set; }
             public Tile FreeTile { get; set; }
 
+            Random random = new Random();
+
             /// <summary>
             /// Constructor for Board class objects
             /// </summary>
@@ -66,35 +68,96 @@ namespace Labyrinth
                     FreeTile = new Tile(82, random);
             }
 
-            private Random random = new Random();
+            
             
             /// <summary>
             /// Fills the PlayingBoard matrix with objects. Creates the FreeTile
             /// </summary>
             public void FillBoardWithTile()
             {
-                for (int y = 0; y < PlayingBoard.GetLength(0); y++)
+                for (int x = 0; x < PlayingBoard.GetLength(0); x++)
                 {
-                    for (int x = 0; x < PlayingBoard.GetLength(0); x++)
+                    for (int y = 0; y < PlayingBoard.GetLength(1); y++)
                     {
                         if (y % 2 == 0 && x % 2 == 0)
                         {
-                            PlayingBoard[y, x] = null;
+                            Tile tile = new Tile((y * PlayingBoard.GetLength(0)) + (x + 1), random);
+                            if (tile.TileId == 1)
+                            {
+                                tile.PathRight = true; tile.PathDown = true;
+                                tile.PathUp = false; tile.PathLeft = false;
+                                
+
+                            }
+                            else if (tile.TileId == PlayingBoard.GetLength(0))
+                            {
+                                tile.PathDown = true; tile.PathLeft = true;
+                                tile.PathUp = false; tile.PathRight = false;
+                                
+                            }
+                            else if (tile.TileId == (PlayingBoard.GetLength(0) * PlayingBoard.GetLength(0)) - (PlayingBoard.GetLength(0) - 1))
+                            {
+                                tile.PathUp = true; tile.PathRight = true;
+                                tile.PathDown = false; tile.PathLeft = false;
+                                
+                            }
+                            
+                            else if (tile.TileId == (PlayingBoard.GetLength(0) * PlayingBoard.GetLength(0)))
+                            {
+                                tile.PathUp = true; tile.PathLeft = true;
+                                tile.PathRight = false; tile.PathDown = false;
+                                
+                            }
+                            
+                            else if (y == 0)
+                            {
+                                tile.PathRight = true; tile.PathDown = true; tile.PathLeft = true;
+                                tile.PathUp = false;
+                                
+                            }
+                            
+                            else if (y == PlayingBoard.GetLength(0) - 1)
+                            {
+                                tile.PathUp = true; tile.PathRight = true; tile.PathLeft = true;
+                                tile.PathDown = false;
+                                
+                            }
+
+                            else if (x == 0)
+                            {
+                                tile.PathUp = true; tile.PathRight = true; tile.PathDown = true;
+                                tile.PathLeft = false;
+                                
+                            }
+
+                            else if (x == PlayingBoard.GetLength(1) - 1)
+                            {
+                                tile.PathUp = true; tile.PathDown = true; tile.PathLeft = true;
+                                tile.PathRight = false;
+                                
+                            }
+                            tile.Size = new Size(100, 100);
+                            tile.DetermineTilePicture();
+
+                            tile.Enabled = false;
+
+                            PlayingBoard[x, y] = tile;
+
                         }
                         else
                         {
                             Tile tile = new Tile((y * PlayingBoard.GetLength(0)) + (x + 1), random);
-
                             tile.Size = new Size(100, 100);
 
                             tile.DetermineTilePicture();
                             
-                            PlayingBoard[y, x] = tile;
+                            PlayingBoard[x, y] = tile;
                         }
                     }
                 }
 
                 FreeTile.Size = new Size(100, 100);
+
                 FreeTile.DetermineTilePicture();
             }
             /// <summary>
