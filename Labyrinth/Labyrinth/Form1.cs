@@ -18,7 +18,6 @@ namespace Labyrinth
         }
 
         //parameters of objects
-
         int buttonWidth = 200;
         int buttonHeight = 75;
         Color buttonColor = Color.DarkOrange;
@@ -137,7 +136,8 @@ namespace Labyrinth
                 
                 TestForm testForm = new TestForm();
                 testForm.Show();
-                
+
+                board.PlaceTiles(testForm);
             };
 
             host9x9Game.Click += (s, ev) =>
@@ -150,6 +150,7 @@ namespace Labyrinth
                 TestForm testForm = new TestForm();
                 testForm.Show();
                 
+                board.PlaceTiles(testForm);
             };
 
             backToGSButton.Click += (s, ev) =>

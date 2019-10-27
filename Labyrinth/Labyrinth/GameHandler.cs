@@ -6,6 +6,8 @@ using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.Drawing;
 
 namespace Labyrinth
 {
@@ -70,15 +72,67 @@ namespace Labyrinth
                         {
                             Tile tile = new Tile((y * PlayingBoard.GetLength(0)) + (x + 1), random);
 
+                            tile.Size = new Size(100, 100);
+                            tile.BorderStyle = BorderStyle.Fixed3D;
+                            
+                            if (tile.PathUp && !tile.PathRight && tile.PathDown && !tile.PathLeft)
+                                tile.Paint += (s, ev) => { Graphics g = ev.Graphics; Image i = new Bitmap(@"D:\straight.png"); g.TranslateTransform((float)i.Width / 2, (float)i.Height / 2); g.RotateTransform(0); g.TranslateTransform(-(float)i.Width / 2, -(float)i.Height / 2); g.DrawImage(i, new Point(0, 0)); };
+
+                            else if (!tile.PathUp && tile.PathRight && !tile.PathDown && tile.PathLeft)
+                                tile.Paint += (s, ev) => { Graphics g = ev.Graphics; Image i = new Bitmap(@"D:\straight.png"); g.TranslateTransform((float)i.Width / 2, (float)i.Height / 2); g.RotateTransform(90); g.TranslateTransform(-(float)i.Width / 2, -(float)i.Height / 2); g.DrawImage(i, new Point(0, 0)); };
+
+                            else if (tile.PathUp && tile.PathRight && !tile.PathDown && !tile.PathLeft)
+                                tile.Paint += (s, ev) => { Graphics g = ev.Graphics; Image i = new Bitmap(@"D:\turn.png"); g.TranslateTransform((float)i.Width / 2, (float)i.Height / 2); g.RotateTransform(270); g.TranslateTransform(-(float)i.Width / 2, -(float)i.Height / 2); g.DrawImage(i, new Point(0, 0)); };
+
+                            else if (!tile.PathUp && tile.PathRight && tile.PathDown && !tile.PathLeft)
+                                tile.Paint += (s, ev) => { Graphics g = ev.Graphics; Image i = new Bitmap(@"D:\turn.png"); g.TranslateTransform((float)i.Width / 2, (float)i.Height / 2); g.RotateTransform(0); g.TranslateTransform(-(float)i.Width / 2, -(float)i.Height / 2); g.DrawImage(i, new Point(0, 0)); };
+
+                            else if (!tile.PathUp && !tile.PathRight && tile.PathDown && tile.PathLeft)
+                                tile.Paint += (s, ev) => { Graphics g = ev.Graphics; Image i = new Bitmap(@"D:\turn.png"); g.TranslateTransform((float)i.Width / 2, (float)i.Height / 2); g.RotateTransform(90); g.TranslateTransform(-(float)i.Width / 2, -(float)i.Height / 2); g.DrawImage(i, new Point(0, 0)); };
+
+                            else if (tile.PathUp && !tile.PathRight && !tile.PathDown && tile.PathLeft)
+                                tile.Paint += (s, ev) => { Graphics g = ev.Graphics; Image i = new Bitmap(@"D:\turn.png"); g.TranslateTransform((float)i.Width / 2, (float)i.Height / 2); g.RotateTransform(180); g.TranslateTransform(-(float)i.Width / 2, -(float)i.Height / 2); g.DrawImage(i, new Point(0, 0)); };
+
+                            else if (tile.PathUp && tile.PathRight && tile.PathDown && !tile.PathLeft)
+                                tile.Paint += (s, ev) => { Graphics g = ev.Graphics; Image i = new Bitmap(@"D:\t_path.png"); g.TranslateTransform((float)i.Width / 2, (float)i.Height / 2); g.RotateTransform(90); g.TranslateTransform(-(float)i.Width / 2, -(float)i.Height / 2); g.DrawImage(i, new Point(0, 0)); };
+
+                            else if (!tile.PathUp && tile.PathRight && tile.PathDown && tile.PathLeft)
+                                tile.Paint += (s, ev) => { Graphics g = ev.Graphics; Image i = new Bitmap(@"D:\t_path.png"); g.TranslateTransform((float)i.Width / 2, (float)i.Height / 2); g.RotateTransform(180); g.TranslateTransform(-(float)i.Width / 2, -(float)i.Height / 2); g.DrawImage(i, new Point(0, 0)); };
+
+                            else if (tile.PathUp && !tile.PathRight && tile.PathDown && tile.PathLeft)
+                                tile.Paint += (s, ev) => { Graphics g = ev.Graphics; Image i = new Bitmap(@"D:\t_path.png"); g.TranslateTransform((float)i.Width / 2, (float)i.Height / 2); g.RotateTransform(270); g.TranslateTransform(-(float)i.Width / 2, -(float)i.Height / 2); g.DrawImage(i, new Point(0, 0)); };
+
+                            else if (tile.PathUp && tile.PathRight && !tile.PathDown && tile.PathLeft)
+                                tile.Paint += (s, ev) => { Graphics g = ev.Graphics; Image i = new Bitmap(@"D:\t_path.png"); g.TranslateTransform((float)i.Width / 2, (float)i.Height / 2); g.RotateTransform(0); g.TranslateTransform(-(float)i.Width / 2, -(float)i.Height / 2); g.DrawImage(i, new Point(0, 0)); };
+                            
                             PlayingBoard[y, x] = tile;
                         }
                     }
                 }
             }
 
-            public void PlaceTiles()
+            public void PlaceTiles(Control c)
             {
+                int y = 10, x = 10;
+                for (int i = 0; i < PlayingBoard.GetLength(0); i++)
+                {
+                    for (int j = 0; j < PlayingBoard.GetLength(1); j++)
+                    {
 
+                        if (PlayingBoard[i, j] != null)
+                        {
+                            c.Controls.Add(PlayingBoard[i, j]);
+                            PlayingBoard[i, j].Location = new Point(y, x);
+                            x += 110;
+                        }
+                        else
+                        {
+                            x += 110;
+                        }
+                    }
+                    x = 10;
+                    y += 110;
+                }
             }
         }
         //------------------------------
