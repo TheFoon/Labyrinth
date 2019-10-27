@@ -130,12 +130,26 @@ namespace Labyrinth
 
             host7x7Game.Click += (s, ev) =>
             {
+                BoardHandler.Board board = new BoardHandler.Board(7);
 
+                board.FillBoardWithTile();
+
+                
+                TestForm testForm = new TestForm();
+                testForm.Show();
+                
             };
 
             host9x9Game.Click += (s, ev) =>
             {
+                BoardHandler.Board board = new BoardHandler.Board(9);
 
+                board.FillBoardWithTile();
+
+                
+                TestForm testForm = new TestForm();
+                testForm.Show();
+                
             };
 
             backToGSButton.Click += (s, ev) =>

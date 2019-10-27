@@ -45,6 +45,45 @@ namespace Labyrinth
 
     class BoardHandler
     {
+        //------------------------------
+        internal class Board
+        {
+            public Tile[,] PlayingBoard { get; set; }
+
+            public Board(int size)
+            {
+                PlayingBoard = new Tile[size, size];
+            }
+
+            private Random random = new Random();
+            public void FillBoardWithTile()
+            {
+                for (int y = 0; y < PlayingBoard.GetLength(0); y++)
+                {
+                    for (int x = 0; x < PlayingBoard.GetLength(0); x++)
+                    {
+                        if (y % 2 == 0 && x % 2 == 0)
+                        {
+                            PlayingBoard[y, x] = null;
+                        }
+                        else
+                        {
+                            Tile tile = new Tile((y * PlayingBoard.GetLength(0)) + (x + 1), random);
+
+                            PlayingBoard[y, x] = tile;
+                        }
+                    }
+                }
+            }
+
+            public void PlaceTiles()
+            {
+
+            }
+        }
+        //------------------------------
+
+
 
     }
 
