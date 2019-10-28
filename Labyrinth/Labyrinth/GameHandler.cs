@@ -50,8 +50,10 @@ namespace Labyrinth
         //------------------------------
         internal class Board
         {
-            public Tile[,] PlayingBoard { get; set; }
-            public Tile FreeTile { get; set; }
+            public Panel[,] PlayingBoard { get; set; }
+            public Panel FreeTile { get; set; }
+            public Panel[] ControlPanelsColumns { get; set; }
+            public Panel[] ControlPanelsRows { get; set; }
 
             Random random = new Random();
 
@@ -61,15 +63,43 @@ namespace Labyrinth
             /// <param name="size">Determines the size of the PlayingBoards</param>
             public Board(int size)
             {
-                PlayingBoard = new Tile[size, size];
+                FreeTile = new Panel();
+                FreeTile.Size = new Size(50, 50);
+                FreeTile.AllowDrop = true;
+                FreeTile.BorderStyle = BorderStyle.Fixed3D;
+
+                PlayingBoard = new Panel[size, size];
                 if (size == 7)
-                    FreeTile = new Tile(50, random);
+                {
+                    Tile freetile = new Tile(50, random);
+                    freetile.DetermineTilePicture();
+                    freetile.Enabled = true;
+                    FreeTile.Controls.Add(freetile);
+                } 
                 else
-                    FreeTile = new Tile(82, random);
+                {
+                    Tile freetile = new Tile(82, random);
+                    freetile.DetermineTilePicture();
+                    freetile.Enabled = true;
+                    FreeTile.Controls.Add(freetile);
+                }
+                FreeTile.Location = new Point(1100, 10);
+
+                FreeTile.DragDrop += Panel_DragDrop;
             }
 
-            
-            
+            private void Board_DragEnter(object sender, DragEventArgs e)
+            {
+                e.Effect = DragDropEffects.Move;
+            }
+
+            private void Panel_DragDrop(object sender, DragEventArgs e)
+            {
+                ((Tile)e.Data.GetData(typeof(Tile))).Parent = (Panel)sender;//3rd was Tile
+            }
+
+
+
             /// <summary>
             /// Fills the PlayingBoard matrix with objects. Creates the FreeTile
             /// </summary>
@@ -79,6 +109,15 @@ namespace Labyrinth
                 {
                     for (int y = 0; y < PlayingBoard.GetLength(1); y++)
                     {
+                        Panel panel = new Panel();
+                        panel.Size = new Size(50, 50);
+                        panel.AllowDrop = true;
+                        panel.BorderStyle = BorderStyle.Fixed3D;
+                        /*panel.DragEnter += Board_DragEnter;
+                        panel.DragDrop += Panel_DragDrop;*/
+
+                        PlayingBoard[x, y] = panel;
+
                         if (y % 2 == 0 && x % 2 == 0)
                         {
                             Tile tile = new Tile((y * PlayingBoard.GetLength(0)) + (x + 1), random);
@@ -86,109 +125,248 @@ namespace Labyrinth
                             {
                                 tile.PathRight = true; tile.PathDown = true;
                                 tile.PathUp = false; tile.PathLeft = false;
-                                
-
                             }
                             else if (tile.TileId == PlayingBoard.GetLength(0))
                             {
                                 tile.PathDown = true; tile.PathLeft = true;
-                                tile.PathUp = false; tile.PathRight = false;
-                                
+                                tile.PathUp = false; tile.PathRight = false;  
                             }
                             else if (tile.TileId == (PlayingBoard.GetLength(0) * PlayingBoard.GetLength(0)) - (PlayingBoard.GetLength(0) - 1))
                             {
                                 tile.PathUp = true; tile.PathRight = true;
                                 tile.PathDown = false; tile.PathLeft = false;
-                                
                             }
                             
                             else if (tile.TileId == (PlayingBoard.GetLength(0) * PlayingBoard.GetLength(0)))
                             {
                                 tile.PathUp = true; tile.PathLeft = true;
                                 tile.PathRight = false; tile.PathDown = false;
-                                
                             }
                             
                             else if (y == 0)
                             {
                                 tile.PathRight = true; tile.PathDown = true; tile.PathLeft = true;
                                 tile.PathUp = false;
-                                
                             }
                             
                             else if (y == PlayingBoard.GetLength(0) - 1)
                             {
                                 tile.PathUp = true; tile.PathRight = true; tile.PathLeft = true;
                                 tile.PathDown = false;
-                                
                             }
 
                             else if (x == 0)
                             {
                                 tile.PathUp = true; tile.PathRight = true; tile.PathDown = true;
                                 tile.PathLeft = false;
-                                
                             }
 
                             else if (x == PlayingBoard.GetLength(1) - 1)
                             {
                                 tile.PathUp = true; tile.PathDown = true; tile.PathLeft = true;
                                 tile.PathRight = false;
-                                
                             }
-                            tile.Size = new Size(100, 100);
+                            tile.Size = new Size(50, 50);
                             tile.DetermineTilePicture();
 
-                            tile.Enabled = false;
+                            PlayingBoard[x, y].Enabled = false;
 
-                            PlayingBoard[x, y] = tile;
-
+                            PlayingBoard[x, y].Controls.Add(tile);
                         }
                         else
                         {
                             Tile tile = new Tile((y * PlayingBoard.GetLength(0)) + (x + 1), random);
-                            tile.Size = new Size(100, 100);
+                            tile.Size = new Size(50, 50);
 
                             tile.DetermineTilePicture();
-                            
-                            PlayingBoard[x, y] = tile;
+
+                            PlayingBoard[x, y].Controls.Add(tile);
                         }
                     }
                 }
-
-                FreeTile.Size = new Size(100, 100);
-
-                FreeTile.DetermineTilePicture();
             }
+
             /// <summary>
             /// Places the Tile objects from the PlayingBoard matrix
             /// </summary>
             /// <param name="c">Which control the objects should be added</param>
             public void PlaceTiles(Control c)
             {
-                int y = 10, x = 10;
+                int y = 70, x = 70;
                 for (int i = 0; i < PlayingBoard.GetLength(0); i++)
                 {
                     for (int j = 0; j < PlayingBoard.GetLength(1); j++)
                     {
-
                         if (PlayingBoard[i, j] != null)
                         {
                             c.Controls.Add(PlayingBoard[i, j]);
                             PlayingBoard[i, j].Location = new Point(y, x);
-                            x += 110;
+                            x += 60;
                         }
                         else
                         {
-                            x += 110;
+                            x += 60;
                         }
                     }
-                    x = 10;
-                    y += 110;
+                    x = 70;
+                    y += 60;
                 }
-                FreeTile.Location = new Point(1100, 10);
                 c.Controls.Add(FreeTile);
-            }           
+            }
+
+            public void PlaceGameControls(Control control)
+            {
+                if (PlayingBoard.GetLength(0) == 7)
+                {
+                    int y = 10, x = 130;
+
+                    Panel column1_top = new Panel(), column2_top = new Panel(), column3_top = new Panel(), column1_bottom = new Panel(), column2_bottom = new Panel(), column3_bottom = new Panel();
+                    ControlPanelsColumns = new Panel[] { column1_top, column2_top, column3_top, column1_bottom, column2_bottom, column3_bottom};
+
+                    for (int i = 0; i < 2; i++)
+                    {
+                        int j = 0;
+                        while (true)
+                        {
+                            if (i != 0 && j == 0)
+                            {
+                                j = 3;
+                            }
+                            ControlPanelsColumns[j].AllowDrop = true;
+                            ControlPanelsColumns[j].Size = new Size(50, 50);
+                            ControlPanelsColumns[j].BorderStyle = BorderStyle.Fixed3D;
+                            ControlPanelsColumns[j].Location = new Point(x, y);
+                            ControlPanelsColumns[j].DragEnter += Board_DragEnter;
+                            ControlPanelsColumns[j].DragDrop += Panel_DragDrop;
+
+                            control.Controls.Add(ControlPanelsColumns[j]);
+
+                            x += 120;
+                            j++;
+
+                            if (j % 3 == 0 && (j != 3 || i == 0))
+                                break;
+                        }
+                        x = 130;
+                        y += 480;
+                    }
+
+                    y = 130; x = 10;
+
+                    Panel row1_top = new Panel(), row2_top = new Panel(), row3_top = new Panel(), row1_bottom = new Panel(), row2_bottom = new Panel(), row3_bottom = new Panel();
+                    ControlPanelsRows = new Panel[] { row1_top, row2_top, row3_top, row1_bottom, row2_bottom, row3_bottom };
+
+                    for (int i = 0; i < 2; i++)
+                    {
+                        int j = 0;
+                        while (true)
+                        {
+                            if (i != 0 && j == 0)
+                            {
+                                j = 3;
+                            }
+                            ControlPanelsRows[j].AllowDrop = true;
+                            ControlPanelsRows[j].Size = new Size(50, 50);
+                            ControlPanelsRows[j].BorderStyle = BorderStyle.Fixed3D;
+                            ControlPanelsRows[j].Location = new Point(x, y);
+                            ControlPanelsRows[j].DragEnter += Board_DragEnter;
+                            ControlPanelsRows[j].DragDrop += Panel_DragDrop;
+
+                            control.Controls.Add(ControlPanelsRows[j]);
+
+                            y += 120;
+                            j++;
+
+                            if (j % 3 == 0 && (j != 3 || i == 0))
+                                break;
+                        }
+                        y = 130;
+                        x += 480;
+                    }
+                }
+
+                else
+                {
+                    int y = 10, x = 130;
+
+                    Panel column1_top = new Panel(), column2_top = new Panel(), column3_top = new Panel(), column4_top = new Panel(), column1_bottom = new Panel(), column2_bottom = new Panel(), column3_bottom = new Panel(), column4_bottom = new Panel();
+                    ControlPanelsColumns = new Panel[] { column1_top, column2_top, column3_top, column4_top, column1_bottom, column2_bottom, column3_bottom, column4_bottom };
+
+                    for (int i = 0; i < 2; i++)
+                    {
+                        int j = 0;
+                        while (true)
+                        {
+                            if (i != 0 && j == 0)
+                            {
+                                j = 4;
+                            }
+                            ControlPanelsColumns[j].AllowDrop = true;
+                            ControlPanelsColumns[j].Size = new Size(50, 50);
+                            ControlPanelsColumns[j].BorderStyle = BorderStyle.Fixed3D;
+                            ControlPanelsColumns[j].Location = new Point(x, y);
+                            ControlPanelsColumns[j].DragEnter += Board_DragEnter;
+                            ControlPanelsColumns[j].DragDrop += Panel_DragDrop;
+
+                            control.Controls.Add(ControlPanelsColumns[j]);
+
+                            x += 120;
+                            j++;
+
+                            if (j % 4 == 0 && (j != 4 || i == 0))
+                                break;
+                        }
+                        x = 130;
+                        y += 600;
+                    }
+
+                    y = 130; x = 10;
+
+                    Panel row1_top = new Panel(), row2_top = new Panel(), row3_top = new Panel(), row4_top = new Panel(), row1_bottom = new Panel(), row2_bottom = new Panel(), row3_bottom = new Panel(), row4_bottom = new Panel();
+                    ControlPanelsRows = new Panel[] { row1_top, row2_top, row3_top, row4_top, row1_bottom, row2_bottom, row3_bottom, row4_bottom };
+
+                    for (int i = 0; i < 2; i++)
+                    {
+                        int j = 0;
+                        while (true)
+                        {
+                            if (i != 0 && j == 0)
+                            {
+                                j = 4;
+                            }
+                            ControlPanelsRows[j].AllowDrop = true;
+                            ControlPanelsRows[j].Size = new Size(50, 50);
+                            ControlPanelsRows[j].BorderStyle = BorderStyle.Fixed3D;
+                            ControlPanelsRows[j].Location = new Point(x, y);
+                            ControlPanelsRows[j].DragEnter += Board_DragEnter;
+                            ControlPanelsRows[j].DragDrop += Panel_DragDrop;
+
+                            control.Controls.Add(ControlPanelsRows[j]);
+
+                            y += 120;
+                            j++;
+
+                            if (j % 4 == 0 && (j != 4 || i == 0))
+                                break;
+                        }
+                        y = 130;
+                        x += 600;
+                    }
+                }
+
+                Button button = new Button();
+                button.Size = new Size(50, 50);
+                button.Location = new Point(1100, 70);
+                button.Text = "OK";
+                button.Click += button_Click;
+
+                control.Controls.Add(button);
+            }
+
+            private void button_Click(object sender, EventArgs e)
+            {
+                throw new NotImplementedException();
+            }
         }
         //------------------------------
     }

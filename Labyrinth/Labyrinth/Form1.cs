@@ -137,6 +137,8 @@ namespace Labyrinth
                 TestForm testForm = new TestForm();
                 testForm.Show();
 
+                board.PlaceGameControls(testForm);
+
                 board.PlaceTiles(testForm);
             };
 
@@ -149,6 +151,8 @@ namespace Labyrinth
                 
                 TestForm testForm = new TestForm();
                 testForm.Show();
+
+                board.PlaceGameControls(testForm);
                 
                 board.PlaceTiles(testForm);
             };
