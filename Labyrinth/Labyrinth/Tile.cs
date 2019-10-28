@@ -64,7 +64,7 @@ namespace Labyrinth
                     Treasure = 0;
             }
 
-            Enabled = false;
+            //Enabled = false;
 
             /*TileImage = new Label();
             Controls.Add(TileImage);
@@ -77,8 +77,6 @@ namespace Labyrinth
             MouseDown += L_MouseDown;
 
         }
-
-        //"../../", "logo.png"
 
         /// <summary>
         /// Determines which image should be assigned to the path

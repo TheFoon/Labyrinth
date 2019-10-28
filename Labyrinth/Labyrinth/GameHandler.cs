@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Drawing;
+using System.Diagnostics;
 
 namespace Labyrinth
 {
@@ -98,8 +99,6 @@ namespace Labyrinth
                 ((Tile)e.Data.GetData(typeof(Tile))).Parent = (Panel)sender;//3rd was Tile
             }
 
-
-
             /// <summary>
             /// Fills the PlayingBoard matrix with objects. Creates the FreeTile
             /// </summary>
@@ -113,6 +112,7 @@ namespace Labyrinth
                         panel.Size = new Size(50, 50);
                         panel.AllowDrop = true;
                         panel.BorderStyle = BorderStyle.Fixed3D;
+                        panel.Enabled = false;
                         /*panel.DragEnter += Board_DragEnter;
                         panel.DragDrop += Panel_DragDrop;*/
 
@@ -253,8 +253,8 @@ namespace Labyrinth
 
                     y = 130; x = 10;
 
-                    Panel row1_top = new Panel(), row2_top = new Panel(), row3_top = new Panel(), row1_bottom = new Panel(), row2_bottom = new Panel(), row3_bottom = new Panel();
-                    ControlPanelsRows = new Panel[] { row1_top, row2_top, row3_top, row1_bottom, row2_bottom, row3_bottom };
+                    Panel row1_left = new Panel(), row2_left = new Panel(), row3_left = new Panel(), row1_right = new Panel(), row2_right = new Panel(), row3_right = new Panel();
+                    ControlPanelsRows = new Panel[] { row1_left, row2_left, row3_left, row1_right, row2_right, row3_right };
 
                     for (int i = 0; i < 2; i++)
                     {
@@ -322,8 +322,8 @@ namespace Labyrinth
 
                     y = 130; x = 10;
 
-                    Panel row1_top = new Panel(), row2_top = new Panel(), row3_top = new Panel(), row4_top = new Panel(), row1_bottom = new Panel(), row2_bottom = new Panel(), row3_bottom = new Panel(), row4_bottom = new Panel();
-                    ControlPanelsRows = new Panel[] { row1_top, row2_top, row3_top, row4_top, row1_bottom, row2_bottom, row3_bottom, row4_bottom };
+                    Panel row1_left = new Panel(), row2_left = new Panel(), row3_left = new Panel(), row4_left = new Panel(), row1_right = new Panel(), row2_right = new Panel(), row3_right = new Panel(), row4_right = new Panel();
+                    ControlPanelsRows = new Panel[] { row1_left, row2_left, row3_left, row4_left, row1_right, row2_right, row3_right, row4_right };
 
                     for (int i = 0; i < 2; i++)
                     {
@@ -363,9 +363,274 @@ namespace Labyrinth
                 control.Controls.Add(button);
             }
 
+            public void ShiftBoardColumns(int which_colmun, bool top, Panel panel)
+            {
+                Tile[] panel_array = new Tile[1];
+                panel.Controls.CopyTo(panel_array, 0);
+                List<Tile[]> tiles = new List<Tile[]>();
+
+                for (int i = 0; i < PlayingBoard.GetLength(0); i++)
+                {
+                    for (int j = 0; j < PlayingBoard.GetLength(1); j++)
+                    {
+                        if (j == which_colmun)
+                        {
+                            Tile[] array = new Tile[1];
+                            PlayingBoard[j, i].Controls.CopyTo(array, 0);
+                            tiles.Add(array);
+                        }
+                    }
+                }
+                if (top)
+                {
+                    for (int i = 1; i < PlayingBoard.GetLength(0); i++)
+                    {
+                        for (int j = 0; j < PlayingBoard.GetLength(1); j++)
+                        {
+                            if (j == which_colmun)
+                            {
+                                PlayingBoard[j, i].Controls.Clear();
+                                PlayingBoard[j, i].Controls.AddRange(tiles[i - 1]);
+                            }
+                        }
+                    }
+                    PlayingBoard[which_colmun, 0].Controls.Clear();
+                    PlayingBoard[which_colmun, 0].Controls.AddRange(panel_array);
+
+                    FreeTile.Controls.Clear();
+                    FreeTile.Controls.AddRange(tiles.Last());
+
+                    panel.Controls.Clear();
+                }
+                else
+                {
+                    for (int i = PlayingBoard.GetLength(0) - 1; i > 0; i--)
+                    {
+                        for (int j = PlayingBoard.GetLength(1); j > 0; j--)
+                        {
+                            if (j == which_colmun)
+                            {
+                                PlayingBoard[j, i - 1].Controls.Clear();
+                                PlayingBoard[j, i - 1].Controls.AddRange(tiles[i]);
+
+                            }
+                        }
+                    }
+                    PlayingBoard[which_colmun, PlayingBoard.GetLength(0) - 1].Controls.Clear();
+                    PlayingBoard[which_colmun, PlayingBoard.GetLength(0) - 1].Controls.AddRange(panel_array);
+
+                    FreeTile.Controls.Clear();
+                    FreeTile.Controls.AddRange(tiles.First());
+
+                    panel.Controls.Clear();
+                }
+                
+            }
+
+            public void ShiftBoardRows(int which_row, bool left, Panel panel)
+            {
+                Tile[] panel_array = new Tile[1];
+                panel.Controls.CopyTo(panel_array, 0);
+                List<Tile[]> tiles = new List<Tile[]>();
+
+                for (int i = 0; i < PlayingBoard.GetLength(0); i++)
+                {
+                    for (int j = 0; j < PlayingBoard.GetLength(1); j++)
+                    {
+                        if (i == which_row)
+                        {
+                            Tile[] array = new Tile[1];
+                            PlayingBoard[j, i].Controls.CopyTo(array, 0);
+                            tiles.Add(array);
+                        }
+                    }
+                }
+                if (left)
+                {
+                    for (int i = 0; i < PlayingBoard.GetLength(0); i++)
+                    {
+                        for (int j = 1; j < PlayingBoard.GetLength(1); j++)
+                        {
+                            if (i == which_row)
+                            {
+                                PlayingBoard[j, i].Controls.Clear();
+                                PlayingBoard[j, i].Controls.AddRange(tiles[j - 1]);
+                            }
+                        }
+                    }
+                    PlayingBoard[0, which_row].Controls.Clear();
+                    PlayingBoard[0, which_row].Controls.AddRange(panel_array);
+
+                    FreeTile.Controls.Clear();
+                    FreeTile.Controls.AddRange(tiles.Last());
+
+                    panel.Controls.Clear();
+                }
+                else
+                {
+                    for (int i = PlayingBoard.GetLength(0); i > 0; i--)
+                    {
+                        for (int j = PlayingBoard.GetLength(1) - 1; j > 0; j--)
+                        {
+                            if (i == which_row)
+                            {
+                                PlayingBoard[j - 1, i].Controls.Clear();
+                                PlayingBoard[j - 1, i].Controls.AddRange(tiles[j]);
+
+                            }
+                        }
+                    }
+                    PlayingBoard[PlayingBoard.GetLength(0) - 1, which_row].Controls.Clear();
+                    PlayingBoard[PlayingBoard.GetLength(0) - 1, which_row].Controls.AddRange(panel_array);
+
+                    FreeTile.Controls.Clear();
+                    FreeTile.Controls.AddRange(tiles.First());
+
+                    panel.Controls.Clear();
+                }
+            }
+
             private void button_Click(object sender, EventArgs e)
             {
-                throw new NotImplementedException();
+                for (int i = 0; i < ControlPanelsColumns.Length; i++)
+                {
+                    if (ControlPanelsColumns[i].Controls.Count != 0)
+                    {
+                        switch (i)
+                        {
+                            case 0:
+                                ShiftBoardColumns(1, true, ControlPanelsColumns[i]);
+                                break;
+                            case 1:
+                                ShiftBoardColumns(3, true, ControlPanelsColumns[i]);
+
+                                break;
+                            case 2:
+                                ShiftBoardColumns(5, true, ControlPanelsColumns[i]);
+
+                                break;
+                            case 3:
+                                if (ControlPanelsColumns.Length > 7)
+                                {
+                                    ShiftBoardColumns(7, true, ControlPanelsColumns[i]);
+
+                                }
+                                else
+                                {
+                                    ShiftBoardColumns(1, false, ControlPanelsColumns[i]);
+
+                                }
+
+                                break;
+                            case 4:
+                                if (ControlPanelsColumns.Length > 7)
+                                {
+                                    ShiftBoardColumns(1, false, ControlPanelsColumns[i]);
+
+                                }
+                                else
+                                {
+                                    ShiftBoardColumns(3, false, ControlPanelsColumns[i]);
+
+                                }
+
+                                break;
+                            case 5:
+                                if (ControlPanelsColumns.Length > 7)
+                                {
+                                    ShiftBoardColumns(3, false, ControlPanelsColumns[i]);
+
+                                }
+                                else
+                                {
+                                    ShiftBoardColumns(5, false, ControlPanelsColumns[i]);
+
+                                }
+
+                                break;
+                            case 6:
+                                ShiftBoardColumns(5, false, ControlPanelsColumns[i]);
+
+                                break;
+                            case 7:
+                                ShiftBoardColumns(7, false, ControlPanelsColumns[i]);
+
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                }
+
+                for (int i = 0; i < ControlPanelsRows.Length; i++)
+                {
+                    if (ControlPanelsRows[i].Controls.Count != 0)
+                    {
+                        switch (i)
+                        {
+                            case 0:
+                                ShiftBoardRows(1, true, ControlPanelsRows[i]);
+                                break;
+                            case 1:
+                                ShiftBoardRows(3, true, ControlPanelsRows[i]);
+
+                                break;
+                            case 2:
+                                ShiftBoardRows(5, true, ControlPanelsRows[i]);
+
+                                break;
+                            case 3:
+                                if (ControlPanelsRows.Length > 7)
+                                {
+                                    ShiftBoardRows(7, true, ControlPanelsRows[i]);
+
+                                }
+                                else
+                                {
+                                    ShiftBoardRows(1, false, ControlPanelsRows[i]);
+
+                                }
+
+                                break;
+                            case 4:
+                                if (ControlPanelsRows.Length > 7)
+                                {
+                                    ShiftBoardRows(1, false, ControlPanelsRows[i]);
+
+                                }
+                                else
+                                {
+                                    ShiftBoardRows(3, false, ControlPanelsRows[i]);
+
+                                }
+
+                                break;
+                            case 5:
+                                if (ControlPanelsRows.Length > 7)
+                                {
+                                    ShiftBoardRows(3, false, ControlPanelsRows[i]);
+
+                                }
+                                else
+                                {
+                                    ShiftBoardRows(5, false, ControlPanelsRows[i]);
+
+                                }
+
+                                break;
+                            case 6:
+                                ShiftBoardRows(5, false, ControlPanelsRows[i]);
+
+                                break;
+                            case 7:
+                                ShiftBoardRows(7, false, ControlPanelsRows[i]);
+
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                }
             }
         }
         //------------------------------
