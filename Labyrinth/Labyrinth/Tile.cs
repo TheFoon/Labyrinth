@@ -16,7 +16,6 @@ namespace Labyrinth
         public bool PathRight { get; set; }
         public bool PathDown { get; set; }
         public bool PathLeft { get; set; }
-        //public Label TileImage { get; set; }
 
         /// <summary>
         /// Constructor for Tile class objects
@@ -63,19 +62,7 @@ namespace Labyrinth
                 else
                     Treasure = 0;
             }
-
-            //Enabled = false;
-
-            /*TileImage = new Label();
-            Controls.Add(TileImage);
-            TileImage.Size = new Size(100, 100);
-            TileImage.Location = new Point(0, 0);*/
-
-
-            /*DragEnter += Tile_DragEnter;
-            DragDrop += TIle_DragDrop;*/
             MouseDown += L_MouseDown;
-
         }
 
         /// <summary>
@@ -113,6 +100,7 @@ namespace Labyrinth
             else if (this.PathUp && this.PathRight && !this.PathDown && this.PathLeft)
                 Paint += (s, ev) => { Graphics g = ev.Graphics; Image i = new Bitmap(@"../../t_path.png"); g.TranslateTransform((float)i.Width / 2, (float)i.Height / 2); g.RotateTransform(0); g.TranslateTransform(-(float)i.Width / 2, -(float)i.Height / 2); g.DrawImage(i, new Point(0, 0)); };
         }
+
         private void L_MouseDown(object sender, MouseEventArgs e)
         {
             DoDragDrop(this, DragDropEffects.Move);

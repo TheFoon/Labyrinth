@@ -133,9 +133,10 @@ namespace Labyrinth
 
                 board.FillBoardWithTile();
 
-                
+                //Testing purposes
                 TestForm testForm = new TestForm();
                 testForm.Show();
+                //
 
                 board.PlaceGameControls(testForm);
 
@@ -148,9 +149,10 @@ namespace Labyrinth
 
                 board.FillBoardWithTile();
 
-                
+                //Testing purposes
                 TestForm testForm = new TestForm();
                 testForm.Show();
+                //
 
                 board.PlaceGameControls(testForm);
                 

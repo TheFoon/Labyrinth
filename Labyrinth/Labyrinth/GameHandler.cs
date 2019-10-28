@@ -48,7 +48,7 @@ namespace Labyrinth
 
     class BoardHandler
     {
-        //------------------------------
+        //Board class and its methods
         internal class Board
         {
             public Panel[,] PlayingBoard { get; set; }
@@ -70,6 +70,8 @@ namespace Labyrinth
                 FreeTile.BorderStyle = BorderStyle.Fixed3D;
 
                 PlayingBoard = new Panel[size, size];
+
+                //If the board is 7*7
                 if (size == 7)
                 {
                     Tile freetile = new Tile(50, random);
@@ -77,6 +79,8 @@ namespace Labyrinth
                     freetile.Enabled = true;
                     FreeTile.Controls.Add(freetile);
                 } 
+
+                //If the board is 9*9
                 else
                 {
                     Tile freetile = new Tile(82, random);
@@ -89,11 +93,21 @@ namespace Labyrinth
                 FreeTile.DragDrop += Panel_DragDrop;
             }
 
+            /// <summary>
+            /// Panel Drag Enter Event handler
+            /// </summary>
+            /// <param name="sender"></param>
+            /// <param name="e"></param>
             private void Board_DragEnter(object sender, DragEventArgs e)
             {
                 e.Effect = DragDropEffects.Move;
             }
 
+            /// <summary>
+            /// Panel Drag and Drop Event Handler
+            /// </summary>
+            /// <param name="sender"></param>
+            /// <param name="e"></param>
             private void Panel_DragDrop(object sender, DragEventArgs e)
             {
                 ((Tile)e.Data.GetData(typeof(Tile))).Parent = (Panel)sender;//3rd was Tile
@@ -113,14 +127,15 @@ namespace Labyrinth
                         panel.AllowDrop = true;
                         panel.BorderStyle = BorderStyle.Fixed3D;
                         panel.Enabled = false;
-                        /*panel.DragEnter += Board_DragEnter;
-                        panel.DragDrop += Panel_DragDrop;*/
 
                         PlayingBoard[x, y] = panel;
 
+                        //Sets the properties of the fixed tiles (e.g: starting locations)
                         if (y % 2 == 0 && x % 2 == 0)
                         {
                             Tile tile = new Tile((y * PlayingBoard.GetLength(0)) + (x + 1), random);
+
+                            #region Starting Locations
                             if (tile.TileId == 1)
                             {
                                 tile.PathRight = true; tile.PathDown = true;
@@ -142,7 +157,9 @@ namespace Labyrinth
                                 tile.PathUp = true; tile.PathLeft = true;
                                 tile.PathRight = false; tile.PathDown = false;
                             }
-                            
+                            #endregion
+
+                            #region Other Fix Tiles
                             else if (y == 0)
                             {
                                 tile.PathRight = true; tile.PathDown = true; tile.PathLeft = true;
@@ -166,6 +183,8 @@ namespace Labyrinth
                                 tile.PathUp = true; tile.PathDown = true; tile.PathLeft = true;
                                 tile.PathRight = false;
                             }
+                            #endregion
+
                             tile.Size = new Size(50, 50);
                             tile.DetermineTilePicture();
 
@@ -173,6 +192,7 @@ namespace Labyrinth
 
                             PlayingBoard[x, y].Controls.Add(tile);
                         }
+                        //Adds the non-fixed tiles to the board matrix
                         else
                         {
                             Tile tile = new Tile((y * PlayingBoard.GetLength(0)) + (x + 1), random);
@@ -189,8 +209,8 @@ namespace Labyrinth
             /// <summary>
             /// Places the Tile objects from the PlayingBoard matrix
             /// </summary>
-            /// <param name="c">Which control the objects should be added</param>
-            public void PlaceTiles(Control c)
+            /// <param name="control">Which control the objects should be added</param>
+            public void PlaceTiles(Control control)
             {
                 int y = 70, x = 70;
                 for (int i = 0; i < PlayingBoard.GetLength(0); i++)
@@ -199,7 +219,7 @@ namespace Labyrinth
                     {
                         if (PlayingBoard[i, j] != null)
                         {
-                            c.Controls.Add(PlayingBoard[i, j]);
+                            control.Controls.Add(PlayingBoard[i, j]);
                             PlayingBoard[i, j].Location = new Point(y, x);
                             x += 60;
                         }
@@ -211,9 +231,13 @@ namespace Labyrinth
                     x = 70;
                     y += 60;
                 }
-                c.Controls.Add(FreeTile);
+                control.Controls.Add(FreeTile);
             }
 
+            /// <summary>
+            /// Places some controls needed for gameplay
+            /// </summary>
+            /// <param name="control">Which control the object should be added</param>
             public void PlaceGameControls(Control control)
             {
                 if (PlayingBoard.GetLength(0) == 7)
@@ -363,12 +387,19 @@ namespace Labyrinth
                 control.Controls.Add(button);
             }
 
+            /// <summary>
+            /// Makes the specific columns shift
+            /// </summary>
+            /// <param name="which_colmun"></param>
+            /// <param name="top">Whether the column shift should happen from the top or the bottom</param>
+            /// <param name="panel">Which control panel has the freetile placed in it</param>
             public void ShiftBoardColumns(int which_colmun, bool top, Panel panel)
             {
                 Tile[] panel_array = new Tile[1];
                 panel.Controls.CopyTo(panel_array, 0);
                 List<Tile[]> tiles = new List<Tile[]>();
-
+                
+                //Fills a list with the copies of the Tile objects inside the panels
                 for (int i = 0; i < PlayingBoard.GetLength(0); i++)
                 {
                     for (int j = 0; j < PlayingBoard.GetLength(1); j++)
@@ -381,6 +412,8 @@ namespace Labyrinth
                         }
                     }
                 }
+                
+                //If the free tile was placed in a top column control panel
                 if (top)
                 {
                     for (int i = 1; i < PlayingBoard.GetLength(0); i++)
@@ -402,6 +435,8 @@ namespace Labyrinth
 
                     panel.Controls.Clear();
                 }
+                
+                //If the free tile was placed in a bottom column control panel
                 else
                 {
                     for (int i = PlayingBoard.GetLength(0) - 1; i > 0; i--)
@@ -427,12 +462,19 @@ namespace Labyrinth
                 
             }
 
+            /// <summary>
+            /// Makes the specific row shift
+            /// </summary>
+            /// <param name="which_row"></param>
+            /// <param name="left">Whether the row shift should happen from the left or the right</param>
+            /// <param name="panel">Which control panel has the freetile placed in it</param>
             public void ShiftBoardRows(int which_row, bool left, Panel panel)
             {
                 Tile[] panel_array = new Tile[1];
                 panel.Controls.CopyTo(panel_array, 0);
                 List<Tile[]> tiles = new List<Tile[]>();
-
+                
+                //Fills a list with the copies of the Tile objects inside the panels
                 for (int i = 0; i < PlayingBoard.GetLength(0); i++)
                 {
                     for (int j = 0; j < PlayingBoard.GetLength(1); j++)
@@ -445,6 +487,8 @@ namespace Labyrinth
                         }
                     }
                 }
+
+                //If the free tile was placed in a right row control panel
                 if (left)
                 {
                     for (int i = 0; i < PlayingBoard.GetLength(0); i++)
@@ -466,6 +510,8 @@ namespace Labyrinth
 
                     panel.Controls.Clear();
                 }
+
+                //If the free tile was placed in a left row control panel
                 else
                 {
                     for (int i = PlayingBoard.GetLength(0); i > 0; i--)
@@ -490,8 +536,14 @@ namespace Labyrinth
                 }
             }
 
+            /// <summary>
+            /// Button click event handler
+            /// </summary>
+            /// <param name="sender"></param>
+            /// <param name="e"></param>
             private void button_Click(object sender, EventArgs e)
             {
+                //Check if the free tile was placed in a cloumn control panel
                 for (int i = 0; i < ControlPanelsColumns.Length; i++)
                 {
                     if (ControlPanelsColumns[i].Controls.Count != 0)
@@ -562,8 +614,10 @@ namespace Labyrinth
                     }
                 }
 
+                //Check if the free tile was placed in a row control panel
                 for (int i = 0; i < ControlPanelsRows.Length; i++)
                 {
+
                     if (ControlPanelsRows[i].Controls.Count != 0)
                     {
                         switch (i)
@@ -633,7 +687,6 @@ namespace Labyrinth
                 }
             }
         }
-        //------------------------------
     }
 
     public static class LobbyHandler
