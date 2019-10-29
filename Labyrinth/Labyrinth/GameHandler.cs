@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Drawing;
+using System.Diagnostics;
 
 namespace Labyrinth
 {
@@ -47,11 +48,13 @@ namespace Labyrinth
 
     class BoardHandler
     {
-        //------------------------------
+        //Board class and its methods
         internal class Board
         {
-            public Tile[,] PlayingBoard { get; set; }
-            public Tile FreeTile { get; set; }
+            public Panel[,] PlayingBoard { get; set; }
+            public Panel FreeTile { get; set; }
+            public Panel[] ControlPanelsColumns { get; set; }
+            public Panel[] ControlPanelsRows { get; set; }
 
             Random random = new Random();
 
@@ -61,15 +64,55 @@ namespace Labyrinth
             /// <param name="size">Determines the size of the PlayingBoards</param>
             public Board(int size)
             {
-                PlayingBoard = new Tile[size, size];
+                FreeTile = new Panel();
+                FreeTile.Size = new Size(50, 50);
+                FreeTile.AllowDrop = true;
+                FreeTile.BorderStyle = BorderStyle.Fixed3D;
+
+                PlayingBoard = new Panel[size, size];
+
+                //If the board is 7*7
                 if (size == 7)
-                    FreeTile = new Tile(50, random);
+                {
+                    Tile freetile = new Tile(50, random);
+                    freetile.DetermineTilePicture();
+                    freetile.Enabled = true;
+                    FreeTile.Controls.Add(freetile);
+                } 
+
+                //If the board is 9*9
                 else
-                    FreeTile = new Tile(82, random);
+                {
+                    Tile freetile = new Tile(82, random);
+                    freetile.DetermineTilePicture();
+                    freetile.Enabled = true;
+                    FreeTile.Controls.Add(freetile);
+                }
+                FreeTile.Location = new Point(1100, 10);
+
+                FreeTile.DragDrop += Panel_DragDrop;
             }
 
-            
-            
+            /// <summary>
+            /// Panel Drag Enter Event handler
+            /// </summary>
+            /// <param name="sender"></param>
+            /// <param name="e"></param>
+            private void Board_DragEnter(object sender, DragEventArgs e)
+            {
+                e.Effect = DragDropEffects.Move;
+            }
+
+            /// <summary>
+            /// Panel Drag and Drop Event Handler
+            /// </summary>
+            /// <param name="sender"></param>
+            /// <param name="e"></param>
+            private void Panel_DragDrop(object sender, DragEventArgs e)
+            {
+                ((Tile)e.Data.GetData(typeof(Tile))).Parent = (Panel)sender;//3rd was Tile
+            }
+
             /// <summary>
             /// Fills the PlayingBoard matrix with objects. Creates the FreeTile
             /// </summary>
@@ -79,118 +122,571 @@ namespace Labyrinth
                 {
                     for (int y = 0; y < PlayingBoard.GetLength(1); y++)
                     {
+                        Panel panel = new Panel();
+                        panel.Size = new Size(50, 50);
+                        panel.AllowDrop = true;
+                        panel.BorderStyle = BorderStyle.Fixed3D;
+                        panel.Enabled = false;
+
+                        PlayingBoard[x, y] = panel;
+
+                        //Sets the properties of the fixed tiles (e.g: starting locations)
                         if (y % 2 == 0 && x % 2 == 0)
                         {
                             Tile tile = new Tile((y * PlayingBoard.GetLength(0)) + (x + 1), random);
+
+                            #region Starting Locations
                             if (tile.TileId == 1)
                             {
                                 tile.PathRight = true; tile.PathDown = true;
                                 tile.PathUp = false; tile.PathLeft = false;
-                                
-
                             }
                             else if (tile.TileId == PlayingBoard.GetLength(0))
                             {
                                 tile.PathDown = true; tile.PathLeft = true;
-                                tile.PathUp = false; tile.PathRight = false;
-                                
+                                tile.PathUp = false; tile.PathRight = false;  
                             }
                             else if (tile.TileId == (PlayingBoard.GetLength(0) * PlayingBoard.GetLength(0)) - (PlayingBoard.GetLength(0) - 1))
                             {
                                 tile.PathUp = true; tile.PathRight = true;
                                 tile.PathDown = false; tile.PathLeft = false;
-                                
                             }
                             
                             else if (tile.TileId == (PlayingBoard.GetLength(0) * PlayingBoard.GetLength(0)))
                             {
                                 tile.PathUp = true; tile.PathLeft = true;
                                 tile.PathRight = false; tile.PathDown = false;
-                                
                             }
-                            
+                            #endregion
+
+                            #region Other Fix Tiles
                             else if (y == 0)
                             {
                                 tile.PathRight = true; tile.PathDown = true; tile.PathLeft = true;
                                 tile.PathUp = false;
-                                
                             }
                             
                             else if (y == PlayingBoard.GetLength(0) - 1)
                             {
                                 tile.PathUp = true; tile.PathRight = true; tile.PathLeft = true;
                                 tile.PathDown = false;
-                                
                             }
 
                             else if (x == 0)
                             {
                                 tile.PathUp = true; tile.PathRight = true; tile.PathDown = true;
                                 tile.PathLeft = false;
-                                
                             }
 
                             else if (x == PlayingBoard.GetLength(1) - 1)
                             {
                                 tile.PathUp = true; tile.PathDown = true; tile.PathLeft = true;
                                 tile.PathRight = false;
-                                
                             }
-                            tile.Size = new Size(100, 100);
+                            #endregion
+
+                            tile.Size = new Size(50, 50);
                             tile.DetermineTilePicture();
 
-                            tile.Enabled = false;
+                            PlayingBoard[x, y].Enabled = false;
 
-                            PlayingBoard[x, y] = tile;
-
+                            PlayingBoard[x, y].Controls.Add(tile);
                         }
+                        //Adds the non-fixed tiles to the board matrix
                         else
                         {
                             Tile tile = new Tile((y * PlayingBoard.GetLength(0)) + (x + 1), random);
-                            tile.Size = new Size(100, 100);
+                            tile.Size = new Size(50, 50);
 
                             tile.DetermineTilePicture();
-                            
-                            PlayingBoard[x, y] = tile;
+
+                            PlayingBoard[x, y].Controls.Add(tile);
                         }
                     }
                 }
-
-                FreeTile.Size = new Size(100, 100);
-
-                FreeTile.DetermineTilePicture();
             }
+
             /// <summary>
             /// Places the Tile objects from the PlayingBoard matrix
             /// </summary>
-            /// <param name="c">Which control the objects should be added</param>
-            public void PlaceTiles(Control c)
+            /// <param name="control">Which control the objects should be added</param>
+            public void PlaceTiles(Control control)
             {
-                int y = 10, x = 10;
+                int y = 70, x = 70;
                 for (int i = 0; i < PlayingBoard.GetLength(0); i++)
                 {
                     for (int j = 0; j < PlayingBoard.GetLength(1); j++)
                     {
-
                         if (PlayingBoard[i, j] != null)
                         {
-                            c.Controls.Add(PlayingBoard[i, j]);
+                            control.Controls.Add(PlayingBoard[i, j]);
                             PlayingBoard[i, j].Location = new Point(y, x);
-                            x += 110;
+                            x += 60;
                         }
                         else
                         {
-                            x += 110;
+                            x += 60;
                         }
                     }
-                    x = 10;
-                    y += 110;
+                    x = 70;
+                    y += 60;
                 }
-                FreeTile.Location = new Point(1100, 10);
-                c.Controls.Add(FreeTile);
-            }           
+                control.Controls.Add(FreeTile);
+            }
+
+            /// <summary>
+            /// Places some controls needed for gameplay
+            /// </summary>
+            /// <param name="control">Which control the object should be added</param>
+            public void PlaceGameControls(Control control)
+            {
+                if (PlayingBoard.GetLength(0) == 7)
+                {
+                    int y = 10, x = 130;
+
+                    Panel column1_top = new Panel(), column2_top = new Panel(), column3_top = new Panel(), column1_bottom = new Panel(), column2_bottom = new Panel(), column3_bottom = new Panel();
+                    ControlPanelsColumns = new Panel[] { column1_top, column2_top, column3_top, column1_bottom, column2_bottom, column3_bottom};
+
+                    for (int i = 0; i < 2; i++)
+                    {
+                        int j = 0;
+                        while (true)
+                        {
+                            if (i != 0 && j == 0)
+                            {
+                                j = 3;
+                            }
+                            ControlPanelsColumns[j].AllowDrop = true;
+                            ControlPanelsColumns[j].Size = new Size(50, 50);
+                            ControlPanelsColumns[j].BorderStyle = BorderStyle.Fixed3D;
+                            ControlPanelsColumns[j].Location = new Point(x, y);
+                            ControlPanelsColumns[j].DragEnter += Board_DragEnter;
+                            ControlPanelsColumns[j].DragDrop += Panel_DragDrop;
+
+                            control.Controls.Add(ControlPanelsColumns[j]);
+
+                            x += 120;
+                            j++;
+
+                            if (j % 3 == 0 && (j != 3 || i == 0))
+                                break;
+                        }
+                        x = 130;
+                        y += 480;
+                    }
+
+                    y = 130; x = 10;
+
+                    Panel row1_left = new Panel(), row2_left = new Panel(), row3_left = new Panel(), row1_right = new Panel(), row2_right = new Panel(), row3_right = new Panel();
+                    ControlPanelsRows = new Panel[] { row1_left, row2_left, row3_left, row1_right, row2_right, row3_right };
+
+                    for (int i = 0; i < 2; i++)
+                    {
+                        int j = 0;
+                        while (true)
+                        {
+                            if (i != 0 && j == 0)
+                            {
+                                j = 3;
+                            }
+                            ControlPanelsRows[j].AllowDrop = true;
+                            ControlPanelsRows[j].Size = new Size(50, 50);
+                            ControlPanelsRows[j].BorderStyle = BorderStyle.Fixed3D;
+                            ControlPanelsRows[j].Location = new Point(x, y);
+                            ControlPanelsRows[j].DragEnter += Board_DragEnter;
+                            ControlPanelsRows[j].DragDrop += Panel_DragDrop;
+
+                            control.Controls.Add(ControlPanelsRows[j]);
+
+                            y += 120;
+                            j++;
+
+                            if (j % 3 == 0 && (j != 3 || i == 0))
+                                break;
+                        }
+                        y = 130;
+                        x += 480;
+                    }
+                }
+
+                else
+                {
+                    int y = 10, x = 130;
+
+                    Panel column1_top = new Panel(), column2_top = new Panel(), column3_top = new Panel(), column4_top = new Panel(), column1_bottom = new Panel(), column2_bottom = new Panel(), column3_bottom = new Panel(), column4_bottom = new Panel();
+                    ControlPanelsColumns = new Panel[] { column1_top, column2_top, column3_top, column4_top, column1_bottom, column2_bottom, column3_bottom, column4_bottom };
+
+                    for (int i = 0; i < 2; i++)
+                    {
+                        int j = 0;
+                        while (true)
+                        {
+                            if (i != 0 && j == 0)
+                            {
+                                j = 4;
+                            }
+                            ControlPanelsColumns[j].AllowDrop = true;
+                            ControlPanelsColumns[j].Size = new Size(50, 50);
+                            ControlPanelsColumns[j].BorderStyle = BorderStyle.Fixed3D;
+                            ControlPanelsColumns[j].Location = new Point(x, y);
+                            ControlPanelsColumns[j].DragEnter += Board_DragEnter;
+                            ControlPanelsColumns[j].DragDrop += Panel_DragDrop;
+
+                            control.Controls.Add(ControlPanelsColumns[j]);
+
+                            x += 120;
+                            j++;
+
+                            if (j % 4 == 0 && (j != 4 || i == 0))
+                                break;
+                        }
+                        x = 130;
+                        y += 600;
+                    }
+
+                    y = 130; x = 10;
+
+                    Panel row1_left = new Panel(), row2_left = new Panel(), row3_left = new Panel(), row4_left = new Panel(), row1_right = new Panel(), row2_right = new Panel(), row3_right = new Panel(), row4_right = new Panel();
+                    ControlPanelsRows = new Panel[] { row1_left, row2_left, row3_left, row4_left, row1_right, row2_right, row3_right, row4_right };
+
+                    for (int i = 0; i < 2; i++)
+                    {
+                        int j = 0;
+                        while (true)
+                        {
+                            if (i != 0 && j == 0)
+                            {
+                                j = 4;
+                            }
+                            ControlPanelsRows[j].AllowDrop = true;
+                            ControlPanelsRows[j].Size = new Size(50, 50);
+                            ControlPanelsRows[j].BorderStyle = BorderStyle.Fixed3D;
+                            ControlPanelsRows[j].Location = new Point(x, y);
+                            ControlPanelsRows[j].DragEnter += Board_DragEnter;
+                            ControlPanelsRows[j].DragDrop += Panel_DragDrop;
+
+                            control.Controls.Add(ControlPanelsRows[j]);
+
+                            y += 120;
+                            j++;
+
+                            if (j % 4 == 0 && (j != 4 || i == 0))
+                                break;
+                        }
+                        y = 130;
+                        x += 600;
+                    }
+                }
+
+                Button button = new Button();
+                button.Size = new Size(50, 50);
+                button.Location = new Point(1100, 70);
+                button.Text = "OK";
+                button.Click += button_Click;
+
+                control.Controls.Add(button);
+            }
+
+            /// <summary>
+            /// Makes the specific columns shift
+            /// </summary>
+            /// <param name="which_colmun"></param>
+            /// <param name="top">Whether the column shift should happen from the top or the bottom</param>
+            /// <param name="panel">Which control panel has the freetile placed in it</param>
+            public void ShiftBoardColumns(int which_colmun, bool top, Panel panel)
+            {
+                Tile[] panel_array = new Tile[1];
+                panel.Controls.CopyTo(panel_array, 0);
+                List<Tile[]> tiles = new List<Tile[]>();
+                
+                //Fills a list with the copies of the Tile objects inside the panels
+                for (int i = 0; i < PlayingBoard.GetLength(0); i++)
+                {
+                    for (int j = 0; j < PlayingBoard.GetLength(1); j++)
+                    {
+                        if (j == which_colmun)
+                        {
+                            Tile[] array = new Tile[1];
+                            PlayingBoard[j, i].Controls.CopyTo(array, 0);
+                            tiles.Add(array);
+                        }
+                    }
+                }
+                
+                //If the free tile was placed in a top column control panel
+                if (top)
+                {
+                    for (int i = 1; i < PlayingBoard.GetLength(0); i++)
+                    {
+                        for (int j = 0; j < PlayingBoard.GetLength(1); j++)
+                        {
+                            if (j == which_colmun)
+                            {
+                                PlayingBoard[j, i].Controls.Clear();
+                                PlayingBoard[j, i].Controls.AddRange(tiles[i - 1]);
+                            }
+                        }
+                    }
+                    PlayingBoard[which_colmun, 0].Controls.Clear();
+                    PlayingBoard[which_colmun, 0].Controls.AddRange(panel_array);
+
+                    FreeTile.Controls.Clear();
+                    FreeTile.Controls.AddRange(tiles.Last());
+
+                    panel.Controls.Clear();
+                }
+                
+                //If the free tile was placed in a bottom column control panel
+                else
+                {
+                    for (int i = PlayingBoard.GetLength(0) - 1; i > 0; i--)
+                    {
+                        for (int j = PlayingBoard.GetLength(1); j > 0; j--)
+                        {
+                            if (j == which_colmun)
+                            {
+                                PlayingBoard[j, i - 1].Controls.Clear();
+                                PlayingBoard[j, i - 1].Controls.AddRange(tiles[i]);
+
+                            }
+                        }
+                    }
+                    PlayingBoard[which_colmun, PlayingBoard.GetLength(0) - 1].Controls.Clear();
+                    PlayingBoard[which_colmun, PlayingBoard.GetLength(0) - 1].Controls.AddRange(panel_array);
+
+                    FreeTile.Controls.Clear();
+                    FreeTile.Controls.AddRange(tiles.First());
+
+                    panel.Controls.Clear();
+                }
+                
+            }
+
+            /// <summary>
+            /// Makes the specific row shift
+            /// </summary>
+            /// <param name="which_row"></param>
+            /// <param name="left">Whether the row shift should happen from the left or the right</param>
+            /// <param name="panel">Which control panel has the freetile placed in it</param>
+            public void ShiftBoardRows(int which_row, bool left, Panel panel)
+            {
+                Tile[] panel_array = new Tile[1];
+                panel.Controls.CopyTo(panel_array, 0);
+                List<Tile[]> tiles = new List<Tile[]>();
+                
+                //Fills a list with the copies of the Tile objects inside the panels
+                for (int i = 0; i < PlayingBoard.GetLength(0); i++)
+                {
+                    for (int j = 0; j < PlayingBoard.GetLength(1); j++)
+                    {
+                        if (i == which_row)
+                        {
+                            Tile[] array = new Tile[1];
+                            PlayingBoard[j, i].Controls.CopyTo(array, 0);
+                            tiles.Add(array);
+                        }
+                    }
+                }
+
+                //If the free tile was placed in a right row control panel
+                if (left)
+                {
+                    for (int i = 0; i < PlayingBoard.GetLength(0); i++)
+                    {
+                        for (int j = 1; j < PlayingBoard.GetLength(1); j++)
+                        {
+                            if (i == which_row)
+                            {
+                                PlayingBoard[j, i].Controls.Clear();
+                                PlayingBoard[j, i].Controls.AddRange(tiles[j - 1]);
+                            }
+                        }
+                    }
+                    PlayingBoard[0, which_row].Controls.Clear();
+                    PlayingBoard[0, which_row].Controls.AddRange(panel_array);
+
+                    FreeTile.Controls.Clear();
+                    FreeTile.Controls.AddRange(tiles.Last());
+
+                    panel.Controls.Clear();
+                }
+
+                //If the free tile was placed in a left row control panel
+                else
+                {
+                    for (int i = PlayingBoard.GetLength(0); i > 0; i--)
+                    {
+                        for (int j = PlayingBoard.GetLength(1) - 1; j > 0; j--)
+                        {
+                            if (i == which_row)
+                            {
+                                PlayingBoard[j - 1, i].Controls.Clear();
+                                PlayingBoard[j - 1, i].Controls.AddRange(tiles[j]);
+
+                            }
+                        }
+                    }
+                    PlayingBoard[PlayingBoard.GetLength(0) - 1, which_row].Controls.Clear();
+                    PlayingBoard[PlayingBoard.GetLength(0) - 1, which_row].Controls.AddRange(panel_array);
+
+                    FreeTile.Controls.Clear();
+                    FreeTile.Controls.AddRange(tiles.First());
+
+                    panel.Controls.Clear();
+                }
+            }
+
+            /// <summary>
+            /// Button click event handler
+            /// </summary>
+            /// <param name="sender"></param>
+            /// <param name="e"></param>
+            private void button_Click(object sender, EventArgs e)
+            {
+                //Check if the free tile was placed in a cloumn control panel
+                for (int i = 0; i < ControlPanelsColumns.Length; i++)
+                {
+                    if (ControlPanelsColumns[i].Controls.Count != 0)
+                    {
+                        switch (i)
+                        {
+                            case 0:
+                                ShiftBoardColumns(1, true, ControlPanelsColumns[i]);
+                                break;
+                            case 1:
+                                ShiftBoardColumns(3, true, ControlPanelsColumns[i]);
+
+                                break;
+                            case 2:
+                                ShiftBoardColumns(5, true, ControlPanelsColumns[i]);
+
+                                break;
+                            case 3:
+                                if (ControlPanelsColumns.Length > 7)
+                                {
+                                    ShiftBoardColumns(7, true, ControlPanelsColumns[i]);
+
+                                }
+                                else
+                                {
+                                    ShiftBoardColumns(1, false, ControlPanelsColumns[i]);
+
+                                }
+
+                                break;
+                            case 4:
+                                if (ControlPanelsColumns.Length > 7)
+                                {
+                                    ShiftBoardColumns(1, false, ControlPanelsColumns[i]);
+
+                                }
+                                else
+                                {
+                                    ShiftBoardColumns(3, false, ControlPanelsColumns[i]);
+
+                                }
+
+                                break;
+                            case 5:
+                                if (ControlPanelsColumns.Length > 7)
+                                {
+                                    ShiftBoardColumns(3, false, ControlPanelsColumns[i]);
+
+                                }
+                                else
+                                {
+                                    ShiftBoardColumns(5, false, ControlPanelsColumns[i]);
+
+                                }
+
+                                break;
+                            case 6:
+                                ShiftBoardColumns(5, false, ControlPanelsColumns[i]);
+
+                                break;
+                            case 7:
+                                ShiftBoardColumns(7, false, ControlPanelsColumns[i]);
+
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                }
+
+                //Check if the free tile was placed in a row control panel
+                for (int i = 0; i < ControlPanelsRows.Length; i++)
+                {
+
+                    if (ControlPanelsRows[i].Controls.Count != 0)
+                    {
+                        switch (i)
+                        {
+                            case 0:
+                                ShiftBoardRows(1, true, ControlPanelsRows[i]);
+                                break;
+                            case 1:
+                                ShiftBoardRows(3, true, ControlPanelsRows[i]);
+
+                                break;
+                            case 2:
+                                ShiftBoardRows(5, true, ControlPanelsRows[i]);
+
+                                break;
+                            case 3:
+                                if (ControlPanelsRows.Length > 7)
+                                {
+                                    ShiftBoardRows(7, true, ControlPanelsRows[i]);
+
+                                }
+                                else
+                                {
+                                    ShiftBoardRows(1, false, ControlPanelsRows[i]);
+
+                                }
+
+                                break;
+                            case 4:
+                                if (ControlPanelsRows.Length > 7)
+                                {
+                                    ShiftBoardRows(1, false, ControlPanelsRows[i]);
+
+                                }
+                                else
+                                {
+                                    ShiftBoardRows(3, false, ControlPanelsRows[i]);
+
+                                }
+
+                                break;
+                            case 5:
+                                if (ControlPanelsRows.Length > 7)
+                                {
+                                    ShiftBoardRows(3, false, ControlPanelsRows[i]);
+
+                                }
+                                else
+                                {
+                                    ShiftBoardRows(5, false, ControlPanelsRows[i]);
+
+                                }
+
+                                break;
+                            case 6:
+                                ShiftBoardRows(5, false, ControlPanelsRows[i]);
+
+                                break;
+                            case 7:
+                                ShiftBoardRows(7, false, ControlPanelsRows[i]);
+
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                }
+            }
         }
-        //------------------------------
     }
 
     public static class LobbyHandler
