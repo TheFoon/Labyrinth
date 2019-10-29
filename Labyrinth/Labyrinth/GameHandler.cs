@@ -197,6 +197,10 @@ namespace Labyrinth
     {
         private static IPAddress IP_ADDRESS;
         private static IPAddress IP_BROADCAST;
+        private static int PORTNUMBER = 14999;
+        private static bool hosting = false;
+        private static bool recieving = false;
+        private static UdpClient udpc = new UdpClient(PORTNUMBER);
 
         static LobbyHandler() {
             string info = GetIP();
@@ -206,7 +210,20 @@ namespace Labyrinth
         }
 
         public static void HostBroadcast(bool a) {
-
+            if (a)
+            {
+                hosting = true;
+                Task.Run(() => {
+                    while (hosting) {
+                        string message = $"hb;4;"; //host broadcast ; 
+                        UdpClient client = new UdpClient();
+                        IPEndPoint ip = new IPEndPoint(IP_BROADCAST, PORTNUMBER);
+                        byte[] bytes = Encoding.ASCII.GetBytes(message);
+                        client.Send(bytes, bytes.Length, ip);
+                        client.Close();
+                    }
+                });
+            }
         }
 
         public static void RecieveHosts(bool a)
