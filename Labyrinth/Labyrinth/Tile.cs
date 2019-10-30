@@ -61,6 +61,7 @@ namespace Labyrinth
                     Treasure = 0;
             }
             MouseDown += L_MouseDown;
+            Enabled = false;
         }
 
         /// <summary>
@@ -103,15 +104,5 @@ namespace Labyrinth
         {
             DoDragDrop(this, DragDropEffects.Move);
         }
-
-        /*private void TIle_DragDrop(object sender, DragEventArgs e)
-        {
-            ((Label)e.Data.GetData(typeof(Label))).Parent = (Panel)sender;//3rd was Tile
-        }
-
-        private void Tile_DragEnter(object sender, DragEventArgs e)
-        {
-            e.Effect = DragDropEffects.Move;
-        }*/
     }
 }

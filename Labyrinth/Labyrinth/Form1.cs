@@ -85,7 +85,8 @@ namespace Labyrinth
             button1.Size = new Size(50, 50);
             button1.Location = new Point(1100, 100);
             button1.Text = "No. Players";
-            
+
+            testForm.Show();
 
             testForm.Controls.Add(button1);
 
@@ -153,7 +154,8 @@ namespace Labyrinth
             {
                 BoardHandler.Board board = new BoardHandler.Board(7);
 
-                testForm.Show();
+                button1.Enabled = true;
+                numofplayersCBox.Enabled = true;
 
                 button1.Click += (s1, ev1) =>
                 {
@@ -163,27 +165,29 @@ namespace Labyrinth
                     board.PlaceGameControls(testForm);
                     board.PlaceTiles(testForm);
 
+                    button1.Enabled = false;
+                    numofplayersCBox.Enabled = false;
                 };
-
-                
-
             };
 
             host9x9Game.Click += (s, ev) =>
             {
                 BoardHandler.Board board = new BoardHandler.Board(9);
 
-                testForm.Show();
+                button1.Enabled = true;
+                numofplayersCBox.Enabled = true;
 
                 button1.Click += (s1, ev1) =>
                 {
                     board.AddPlayersToBoard((int)numofplayersCBox.Value);
 
-                };
+                    board.FillBoardWithTile();
+                    board.PlaceGameControls(testForm);
+                    board.PlaceTiles(testForm);
 
-                board.FillBoardWithTile();
-                board.PlaceGameControls(testForm);
-                board.PlaceTiles(testForm);
+                    button1.Enabled = false;
+                    numofplayersCBox.Enabled = false;
+                };
             };
 
             backToGSButton.Click += (s, ev) =>

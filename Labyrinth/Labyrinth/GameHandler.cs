@@ -116,6 +116,11 @@ namespace Labyrinth
                 ((Tile)e.Data.GetData(typeof(Tile))).Parent = (Panel)sender;//3rd was Tile
             }
 
+            /// <summary>
+            /// Player objects' DragDrop Event handler
+            /// </summary>
+            /// <param name="sender"></param>
+            /// <param name="e"></param>
             private void Player_DragDrop(object sender, DragEventArgs e)
             {
                 ((Player)e.Data.GetData(typeof(Player))).Parent = (Panel)sender;//3rd was Tile
@@ -135,8 +140,6 @@ namespace Labyrinth
                         panel.Size = new Size(50, 50);
                         panel.AllowDrop = true;
                         panel.BorderStyle = BorderStyle.Fixed3D;
-                        panel.SendToBack();
-                        //panel.Enabled = false;
 
                         panel.DragEnter += Board_DragEnter;
                         panel.DragDrop += Player_DragDrop;
@@ -397,18 +400,8 @@ namespace Labyrinth
                 button.Text = "OK";
                 button.Click += button_Click;
 
-                /*Button button1 = new Button();
-                button1.Size = new Size();
-                button1.Location = new Point();
-                button1.Text = "No. Players";
-                button1.Click += Button1_Click;*/
-
                 control.Controls.Add(button);
-
-                
             }
-
-            
 
             /// <summary>
             /// Makes the specific columns shift
@@ -419,9 +412,16 @@ namespace Labyrinth
             public void ShiftBoardColumns(int which_colmun, bool top, Panel panel)
             {
                 Control[] panel_array = new Control[1]; //Was Tile
+
+                //Clones the tile, then sets the 'Enabled' property to false then removes the tile from the panel's control then add the edited tile
+                Tile tile = (Tile)panel.Controls[0];
+                tile.Enabled = false;
+                panel.Controls.RemoveAt(0);
+                panel.Controls.Add(tile);
+
                 panel.Controls.CopyTo(panel_array, 0);
 
-                panel.Controls.RemoveAt(0);
+                
                 List<Control[]> tiles = new List<Control[]>(); //Was TIle 
                 
                 //Fills a list with the copies of the Tile objects inside the panels
@@ -456,6 +456,9 @@ namespace Labyrinth
                     PlayingBoard[which_colmun, 0].Controls.AddRange(panel_array);
 
                     FreeTile.Controls.Clear();
+
+                    tiles.Last().First().Enabled = true;
+
                     FreeTile.Controls.AddRange(tiles.Last());
 
                     panel.Controls.Clear();
@@ -480,6 +483,9 @@ namespace Labyrinth
                     PlayingBoard[which_colmun, PlayingBoard.GetLength(0) - 1].Controls.AddRange(panel_array);
 
                     FreeTile.Controls.Clear();
+
+                    tiles.First().First().Enabled = true;
+
                     FreeTile.Controls.AddRange(tiles.First());
 
                     panel.Controls.Clear();
@@ -496,6 +502,13 @@ namespace Labyrinth
             public void ShiftBoardRows(int which_row, bool left, Panel panel)
             {
                 Control[] panel_array = new Control[1]; //Was Tile
+
+                //Clones the tile, then sets the 'Enabled' property to false then removes the tile from the panel's control then add the edited tile
+                Tile tile = (Tile)panel.Controls[0];
+                tile.Enabled = false;
+                panel.Controls.RemoveAt(0);
+                panel.Controls.Add(tile);
+
                 panel.Controls.CopyTo(panel_array, 0);
                 List<Control[]> tiles = new List<Control[]>(); // Was Tile
                 
@@ -531,6 +544,9 @@ namespace Labyrinth
                     PlayingBoard[0, which_row].Controls.AddRange(panel_array);
 
                     FreeTile.Controls.Clear();
+
+                    tiles.Last().Last().Enabled = true;
+
                     FreeTile.Controls.AddRange(tiles.Last());
 
                     panel.Controls.Clear();
@@ -555,6 +571,9 @@ namespace Labyrinth
                     PlayingBoard[PlayingBoard.GetLength(0) - 1, which_row].Controls.AddRange(panel_array);
 
                     FreeTile.Controls.Clear();
+
+                    tiles.First().First().Enabled = true;
+
                     FreeTile.Controls.AddRange(tiles.First());
 
                     panel.Controls.Clear();
@@ -712,10 +731,10 @@ namespace Labyrinth
                 }
             }
 
-            private void Button1_Click(object sender, EventArgs e)
-            {
-            }
-
+            /// <summary>
+            /// Creates the set number of Player objects
+            /// </summary>
+            /// <param name="numofPlyers">Number of players</param>
             public void AddPlayersToBoard(int numofPlyers)
             {
                 for (int i = 0; i < numofPlyers; i++)
@@ -743,6 +762,15 @@ namespace Labyrinth
                             break;
                     }
                 }
+            }
+
+            public bool CheckIfPlayerMovementValid(int playerX, int playerY, int playerDesiredX, int playerDesiredY)
+            {
+                bool valid = false;
+
+                
+                
+                return valid;
             }
         }
     }
