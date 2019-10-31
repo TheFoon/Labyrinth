@@ -705,6 +705,14 @@ namespace Labyrinth
             IP_BROADCAST = GetBroadcastAddress(IP_ADDRESS, mask);
         }
 
+        private static UdpClient udp = new UdpClient(PORTNUMBER);
+        static IAsyncResult ar_ = null;
+
+        private static void StartListening()
+        {
+            ar_ = udp.BeginReceive(Receive, new object());
+        }
+
         public static void HostBroadcast(bool a) {
             if (a)
             {
@@ -723,6 +731,15 @@ namespace Labyrinth
         }
 
         public static void RecieveHosts(bool a)
+        {
+
+        }
+
+        public static void Send(string message) {
+
+        }
+
+        public static void Receive(IAsyncResult ar)
         {
 
         }
