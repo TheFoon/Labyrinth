@@ -69,6 +69,29 @@ namespace Labyrinth
             gameScreenInner.Dock = DockStyle.Fill;
             logoPictureBox.Dock = DockStyle.Fill;
             hostScreenInner.Dock = DockStyle.Fill;
+
+            //Testing purposes
+            TestForm testForm = new TestForm();
+            //
+
+            //Temporary Controls for Loacal
+            NumericUpDown numofplayersCBox = new NumericUpDown();
+            numofplayersCBox.Size = new Size(50, 20);
+            numofplayersCBox.Location = new Point(1100, 70);
+            numofplayersCBox.Minimum = 2;
+            numofplayersCBox.Maximum = 4;
+
+            Button button1 = new Button();
+            button1.Size = new Size(50, 50);
+            button1.Location = new Point(1100, 100);
+            button1.Text = "No. Players";
+
+            testForm.Show();
+
+            testForm.Controls.Add(button1);
+
+            testForm.Controls.Add(numofplayersCBox);
+            //
             #endregion
 
             //add rows and columns to tableLayoutPanel
@@ -131,32 +154,40 @@ namespace Labyrinth
             {
                 BoardHandler.Board board = new BoardHandler.Board(7);
 
-                board.FillBoardWithTile();
+                button1.Enabled = true;
+                numofplayersCBox.Enabled = true;
 
-                //Testing purposes
-                TestForm testForm = new TestForm();
-                testForm.Show();
-                //
+                button1.Click += (s1, ev1) =>
+                {
+                    board.FillBoardWithTile();
 
-                board.PlaceGameControls(testForm);
+                    board.AddPlayersToBoard((int)numofplayersCBox.Value);
+                    board.PlaceGameControls(testForm);
+                    board.PlaceTiles(testForm);
 
-                board.PlaceTiles(testForm);
+                    button1.Enabled = false;
+                    numofplayersCBox.Enabled = false;
+                };
             };
 
             host9x9Game.Click += (s, ev) =>
             {
                 BoardHandler.Board board = new BoardHandler.Board(9);
 
-                board.FillBoardWithTile();
+                button1.Enabled = true;
+                numofplayersCBox.Enabled = true;
 
-                //Testing purposes
-                TestForm testForm = new TestForm();
-                testForm.Show();
-                //
+                button1.Click += (s1, ev1) =>
+                {
+                    board.AddPlayersToBoard((int)numofplayersCBox.Value);
 
-                board.PlaceGameControls(testForm);
-                
-                board.PlaceTiles(testForm);
+                    board.FillBoardWithTile();
+                    board.PlaceGameControls(testForm);
+                    board.PlaceTiles(testForm);
+
+                    button1.Enabled = false;
+                    numofplayersCBox.Enabled = false;
+                };
             };
 
             backToGSButton.Click += (s, ev) =>

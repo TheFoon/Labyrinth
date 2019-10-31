@@ -10,7 +10,6 @@ namespace Labyrinth
 {
     class Tile : Label
     {
-        public readonly int TileId;
         public int Treasure { get; set; }
         public bool PathUp { get; set; }
         public bool PathRight { get; set; }
@@ -22,9 +21,8 @@ namespace Labyrinth
         /// </summary>
         /// <param name="id">The Tile objects id</param>
         /// <param name="r">Required for the random generation of paths</param>
-        public Tile(int id, Random r)
+        public Tile(Random r)
         {
-            TileId = id;
             int numbof_paths = r.Next(2, 4), current_numbof_paths = 0;
             while (current_numbof_paths != numbof_paths)
             {
@@ -63,6 +61,7 @@ namespace Labyrinth
                     Treasure = 0;
             }
             MouseDown += L_MouseDown;
+            Enabled = false;
         }
 
         /// <summary>
@@ -104,16 +103,6 @@ namespace Labyrinth
         private void L_MouseDown(object sender, MouseEventArgs e)
         {
             DoDragDrop(this, DragDropEffects.Move);
-        }
-
-        private void TIle_DragDrop(object sender, DragEventArgs e)
-        {
-            ((Label)e.Data.GetData(typeof(Label))).Parent = (Panel)sender;//3rd was Tile
-        }
-
-        private void Tile_DragEnter(object sender, DragEventArgs e)
-        {
-            e.Effect = DragDropEffects.Move;
         }
     }
 }
